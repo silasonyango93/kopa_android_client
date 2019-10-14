@@ -163,50 +163,18 @@ public class SignIn extends Activity implements View.OnClickListener {
                         Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
                         hideDialog();
                     } else {
+                        Toast.makeText(getBaseContext(), "Tuko ndani", Toast.LENGTH_LONG).show();
 
                         String row="row";
                         boolean cred_success=myDb.updateLocalCreds(email,password,row);
-                        if(cred_success==true){Toast.makeText(getBaseContext(), "Local authentication updated", Toast.LENGTH_LONG).show();}else{Toast.makeText(getBaseContext(), "Local authentication environment setup failed", Toast.LENGTH_LONG).show();}
-                        UserId=jObj.getString("UserId");
-                        WardId=jObj.getString("WardId");
-                        String WardName=jObj.getString("WardName");
-                        String WardRefNo=jObj.getString("WardRefNo");
-                        String UserId = jObj.getString("UserId");
-                        String RoleId = jObj.getString("RoleId");
-                        String FirstName = jObj.getString("FirstName");
-                        String MiddleName = jObj.getString("MiddleName");
-                        String SurName = jObj.getString("SurName");
-                        String JobRefNo = jObj.getString("JobRefNo");
-                        String mKey="User";
-                        updateCredentials(UserId,RoleId,FirstName,MiddleName,SurName,JobRefNo,WardId,WardName,WardRefNo,mKey);
 
-                        if(RoleId.equals("1")){getVillageJurisdictions();getFacilityJurisdictions();
+
 
                             Intent intent = new Intent(
                                     getBaseContext(),ChwHomePage.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
                             startActivity(intent);
-
-                        }else{
-
-
-                            getMyFacility();
-
-                            Intent intent = new Intent(
-                                    getBaseContext(),FacilityHomePage.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                            startActivity(intent);
-
-
-
-
-                        }
-
-
-
-
 
 
 
@@ -231,7 +199,7 @@ public class SignIn extends Activity implements View.OnClickListener {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("AttemptedJobRefNo", email);
+                params.put("AttemptedEmail", email);
                 params.put("AttemptedPassword", password);
                 return params;
             }
