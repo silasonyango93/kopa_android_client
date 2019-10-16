@@ -265,8 +265,8 @@ public class ChwHomePage extends AppCompatActivity
     builder.setView(v);
     builder.setCancelable(true);
     alertDialog = builder.create();
-    alertDialog.setCancelable(false);
-    alertDialog.setCanceledOnTouchOutside(false);
+    alertDialog.setCancelable(true);
+    alertDialog.setCanceledOnTouchOutside(true);
     alertDialog.show();
 
   }
