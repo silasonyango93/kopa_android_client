@@ -7,4 +7,5 @@
     <color name="black_semi_transparent">#B2000000</color>
     <color name="pink">#e781e4</color>
     <color name="bg_bubble_self">#FF94F299</color>
+    <color name="text_green">#388E3C</color>
 </resources>

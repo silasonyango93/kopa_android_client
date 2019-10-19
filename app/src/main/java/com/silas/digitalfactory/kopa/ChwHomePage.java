@@ -1,10 +1,14 @@
 package com.silas.digitalfactory.kopa;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -29,9 +33,15 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.UploadNotificationConfig;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ChwHomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,10 +51,17 @@ public class ChwHomePage extends AppCompatActivity
   AlertDialog alertDialog,myAlertDialog;
   LayoutInflater inflater;
   DatabaseHelper myDb;
-  ImageView imgCalender;
+  public ImageView imgUploadPreview;
+  ImageView imgCalender,imgProfPic,imgNatIdPic;
   private int mYear, mMonth, mDay, mHour, mMinute;
   public int Year,Month,Day,Hour,Minute,Seconds;
   Button btnNext;
+  View b;
+  String path;
+  private Bitmap bitmap;
+  private Uri filePath;
+  public Button btSubmitNothing,btCancelNothing;
+  private int PICK_IMAGE_REQUEST = 1;
   ArrayList<MyBasket> list;
   ListView listview;
 
@@ -180,10 +197,46 @@ public class ChwHomePage extends AppCompatActivity
   }
 
 
+  private void showFileChooser() {
+    Intent intent = new Intent();
+    intent.setType("image/*");
+    intent.setAction(Intent.ACTION_GET_CONTENT);
+    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+      filePath = data.getData();
+      try {
+        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+        imgUploadPreview.setImageBitmap(bitmap);
+        previewUpload();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  public void previewUpload() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setView(b);
+    builder.setCancelable(true);
+    alertDialog = builder.create();
+    alertDialog.show();
+  }
+
+
   public void prepPersonalInfo()
   {
     View v= inflater.inflate(R.layout.personal_pop, null);
     imgCalender=(ImageView) v.findViewById(R.id.calender);
+    imgProfPic=(ImageView) v.findViewById(R.id.personal_photo);
+    imgNatIdPic=(ImageView) v.findViewById(R.id.nationalid_photo);
 
     final EditText etFirstName=(EditText)v.findViewById(R.id.et_first_name);
     final EditText etMiddleName=(EditText)v.findViewById(R.id.et_middle_name);
@@ -233,6 +286,33 @@ public class ChwHomePage extends AppCompatActivity
       public void onClick(View view) {
         //alertDialog.cancel();
         getDate();
+
+
+      }
+    });
+
+    imgProfPic.setOnClickListener(new View.OnClickListener() {
+      @RequiresApi(api = Build.VERSION_CODES.N)
+      @Override
+      public void onClick(View view) {
+        b= inflater.inflate(R.layout.upload_preview, null);
+        imgUploadPreview = (ImageView) b.findViewById(R.id.img_upload_preview);
+        btSubmitNothing = (Button) b.findViewById(R.id.btn_submit_nothing);
+        btCancelNothing = (Button) b.findViewById(R.id.btn_cancel_nothing);
+        btCancelNothing.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            alertDialog.cancel();
+          }
+        });
+
+        btSubmitNothing.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            alertDialog.cancel();
+          }
+        });
+        showFileChooser();
 
 
       }
@@ -367,7 +447,59 @@ public class ChwHomePage extends AppCompatActivity
 
   }
 
+  public String getPath(Uri uri) {
+
+    if (uri!=null)
+    {
+
+      Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+      cursor.moveToFirst();
+      String document_id = cursor.getString(0);
+      document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+      cursor.close();
+
+      cursor = getContentResolver().query(
+              android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+              null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+      cursor.moveToFirst();
+      path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+      cursor.close();}
+    else { Toast.makeText(getApplicationContext(),
+            "You forgot to upload an image of your product!", Toast.LENGTH_LONG)
+            .show();
+      path="";
+    }
+
+    return path;
+  }
 
 
+  public void uploadMultipart() {
+
+    String path = getPath(filePath);
+
+    if (path.isEmpty()){//Do nothing and wait
+    }
+    else {
+      //Uploading code
+      try {
+        String uploadId = UUID.randomUUID().toString();
+
+        //Creating a multi part request
+        new MultipartUploadRequest(this, uploadId, Config.upload_service)
+                .addFileToUpload(path, "image") //Adding file
+                .setNotificationConfig(new UploadNotificationConfig())
+                .setMaxRetries(2)
+                .startUpload(); //Starting the upload
+
+
+      } catch (Exception exc) {
+        Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+      }}
+
+    finish();
+    startActivity(getIntent());
+
+  }
 
 }
