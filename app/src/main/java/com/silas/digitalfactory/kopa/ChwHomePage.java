@@ -1,7 +1,10 @@
 package com.silas.digitalfactory.kopa;
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.icu.util.Calendar;
@@ -12,11 +15,14 @@ import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,20 +41,33 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.UploadNotificationConfig;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ChwHomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-  String mDate,strDOB,strGender,strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strParent;
+  String mDate,strDOB,strGender,strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId;
   private TabLayout tabLayout;
   private ViewPager viewPager;
-  AlertDialog alertDialog,myAlertDialog;
+  AlertDialog alertDialog,myAlertDialog,basicAlertDialog;
   LayoutInflater inflater;
   DatabaseHelper myDb;
   public ImageView imgUploadPreview;
@@ -64,6 +83,7 @@ public class ChwHomePage extends AppCompatActivity
   private int PICK_IMAGE_REQUEST = 1;
   ArrayList<MyBasket> list;
   ListView listview;
+  SharedPreferences pref;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +96,7 @@ public class ChwHomePage extends AppCompatActivity
 
     tabLayout = (TabLayout) findViewById(R.id.tabs);
     tabLayout.setupWithViewPager(viewPager);
+    pref = getApplicationContext().getSharedPreferences("MyPref", 0);
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
@@ -97,6 +118,10 @@ public class ChwHomePage extends AppCompatActivity
 
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
+
+    Toast.makeText(getApplicationContext(),
+            pref.getString("SystemUserId", null), Toast.LENGTH_LONG)
+            .show();
   }
 
 
@@ -236,7 +261,6 @@ public class ChwHomePage extends AppCompatActivity
     View v= inflater.inflate(R.layout.personal_pop, null);
     imgCalender=(ImageView) v.findViewById(R.id.calender);
     imgProfPic=(ImageView) v.findViewById(R.id.personal_photo);
-    imgNatIdPic=(ImageView) v.findViewById(R.id.nationalid_photo);
 
     final EditText etFirstName=(EditText)v.findViewById(R.id.et_first_name);
     final EditText etMiddleName=(EditText)v.findViewById(R.id.et_middle_name);
@@ -244,7 +268,7 @@ public class ChwHomePage extends AppCompatActivity
     final EditText etPhoneNumber=(EditText)v.findViewById(R.id.et_phone_number);
     final EditText etEmail=(EditText)v.findViewById(R.id.et_email);
     final EditText etPhysicalAddress=(EditText)v.findViewById(R.id.et_physical_address);
-    final EditText etParent=(EditText)v.findViewById(R.id.et_parent);
+    final EditText etNatId=(EditText)v.findViewById(R.id.et_natid);
     final CheckBox cb_male =(CheckBox)v.findViewById(R.id.cb_male);
     final CheckBox cb_female =(CheckBox)v.findViewById(R.id.cb_female);
     btnNext = (Button) v.findViewById(R.id.btMore);
@@ -258,7 +282,7 @@ public class ChwHomePage extends AppCompatActivity
         //is chkIos checked?
         if (((CheckBox) v).isChecked()) {
           cb_female.toggle();
-          strGender="Male";
+          strGender="1";
         }
 
       }
@@ -272,7 +296,7 @@ public class ChwHomePage extends AppCompatActivity
         //is chkIos checked?
         if (((CheckBox) v).isChecked()) {
           cb_male.toggle();
-          strGender="FeMale";
+          strGender="2";
         }
 
       }
@@ -312,18 +336,18 @@ public class ChwHomePage extends AppCompatActivity
             alertDialog.cancel();
           }
         });
+
         showFileChooser();
 
 
       }
     });
 
+
     btnNext.setOnClickListener(new View.OnClickListener() {
       @RequiresApi(api = Build.VERSION_CODES.N)
       @Override
       public void onClick(View view) {
-        alertDialog.cancel();
-
 
         strFirstName=etFirstName.getText().toString();
         strMiddleName=etMiddleName.getText().toString();
@@ -331,8 +355,17 @@ public class ChwHomePage extends AppCompatActivity
         strPhoneNumber=etPhoneNumber.getText().toString();
         strEmail=etEmail.getText().toString();
         strPhysicalAddress=etPhysicalAddress.getText().toString();
-        strParent=etParent.getText().toString();
-        prepLocation();
+        strNatId=etNatId.getText().toString();
+
+
+        int permissionCheck = ContextCompat.checkSelfPermission(ChwHomePage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(ChwHomePage.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_IMAGE_REQUEST);
+        } else {
+          uploadMultipart(strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId,strGender,strDOB);
+          basicAlertDialog.cancel();
+        }
 
       }
     });
@@ -344,10 +377,10 @@ public class ChwHomePage extends AppCompatActivity
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setView(v);
     builder.setCancelable(true);
-    alertDialog = builder.create();
-    alertDialog.setCancelable(true);
-    alertDialog.setCanceledOnTouchOutside(true);
-    alertDialog.show();
+    basicAlertDialog = builder.create();
+    basicAlertDialog.setCancelable(true);
+    basicAlertDialog.setCanceledOnTouchOutside(true);
+    basicAlertDialog.show();
 
   }
 
@@ -388,47 +421,47 @@ public class ChwHomePage extends AppCompatActivity
 
   public void prepLocation()
   {
-    View v= inflater.inflate(R.layout.location_pop, null);
-
-    listview = (ListView) v.findViewById(R.id.my_list);
-     list = new ArrayList<>();
-    Cursor res = myDb.getAllRows("chw_village_jurisdiction");
-
-    if (res.getCount() == 0) {
-      //Show message
-      //showMessage("No PaintShares Available", "You currently have no PaintShares saved");
-      return;
-    }
-
-
-
-    while (res.moveToNext()) {
-
-      list.add(new MyBasket(res.getString(1),res.getString(2),res.getString(3)));
-
-    }
-
-
-
-
-    //attaching adapter to the listview
-
-
-    btnNext = (Button) v.findViewById(R.id.btMore);
-
-
-
-
-    btnNext.setOnClickListener(new View.OnClickListener() {
-      @RequiresApi(api = Build.VERSION_CODES.N)
-      @Override
-      public void onClick(View view) {
-        alertDialog.cancel();
-        //prepClinic();
-
-      }
-    });
-    locationPop(v);
+//    View v= inflater.inflate(R.layout.location_pop, null);
+//
+//    listview = (ListView) v.findViewById(R.id.my_list);
+//     list = new ArrayList<>();
+//    Cursor res = myDb.getAllRows("chw_village_jurisdiction");
+//
+//    if (res.getCount() == 0) {
+//      //Show message
+//      //showMessage("No PaintShares Available", "You currently have no PaintShares saved");
+//      return;
+//    }
+//
+//
+//
+//    while (res.moveToNext()) {
+//
+//      list.add(new MyBasket(res.getString(1),res.getString(2),res.getString(3)));
+//
+//    }
+//
+//
+//
+//
+//    //attaching adapter to the listview
+//
+//
+//    btnNext = (Button) v.findViewById(R.id.btMore);
+//
+//
+//
+//
+//    btnNext.setOnClickListener(new View.OnClickListener() {
+//      @RequiresApi(api = Build.VERSION_CODES.N)
+//      @Override
+//      public void onClick(View view) {
+//        alertDialog.cancel();
+//        //prepClinic();
+//
+//      }
+//    });
+//    locationPop(v);
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -438,7 +471,7 @@ public class ChwHomePage extends AppCompatActivity
     builder.setCancelable(true);
     myAlertDialog = builder.create();
 
-    MyListAdapter adapter = new MyListAdapter(this, R.layout.my_custom_list, list,strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strParent,strGender,strDOB,myAlertDialog);
+    MyListAdapter adapter = new MyListAdapter(this, R.layout.my_custom_list, list,strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId,strGender,strDOB,myAlertDialog);
     listview.setAdapter(adapter);
     myAlertDialog.setCancelable(false);
     myAlertDialog.setCanceledOnTouchOutside(false);
@@ -474,7 +507,7 @@ public class ChwHomePage extends AppCompatActivity
   }
 
 
-  public void uploadMultipart() {
+  public void uploadMultipart(String strFirstName, String strMiddleName, String strSurname, String strPhoneNumber, String strEmail, String strPhysicalAddress, String strNatId, String strGender, String strDOB) {
 
     String path = getPath(filePath);
 
@@ -482,12 +515,22 @@ public class ChwHomePage extends AppCompatActivity
     }
     else {
       //Uploading code
-      try {
-        String uploadId = UUID.randomUUID().toString();
 
+      try {
+
+        String uploadId = UUID.randomUUID().toString();
         //Creating a multi part request
-        new MultipartUploadRequest(this, uploadId, Config.upload_service)
-                .addFileToUpload(path, "image") //Adding file
+        new MultipartUploadRequest(this, uploadId, Config.add_company_clients)
+                .addFileToUpload(path, "file") //Adding file
+                .addParameter("ClientFirstName",strFirstName)
+                .addParameter("ClientMiddleName",strMiddleName)
+                .addParameter("ClientSurname",strSurname)
+                .addParameter("ClientNationalId",strNatId)
+                .addParameter("GenderId",strGender)
+                .addParameter("ClientDOB",strDOB)
+                .addParameter("ClientPhoneNumber",strPhoneNumber)
+                .addParameter("ClientPhysicalAddress",strPhysicalAddress)
+                .addParameter("ClientEmail",strEmail)
                 .setNotificationConfig(new UploadNotificationConfig())
                 .setMaxRetries(2)
                 .startUpload(); //Starting the upload
@@ -497,9 +540,7 @@ public class ChwHomePage extends AppCompatActivity
         Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
       }}
 
-    finish();
-    startActivity(getIntent());
-
   }
+
 
 }

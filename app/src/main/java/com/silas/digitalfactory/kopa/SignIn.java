@@ -1,6 +1,7 @@
 package com.silas.digitalfactory.kopa;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -45,6 +46,8 @@ public class SignIn extends Activity implements View.OnClickListener {
     ProgressDialog dialog;
     private String email;
     private String password;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     public  String UserId,WardId;
 
@@ -56,6 +59,8 @@ public class SignIn extends Activity implements View.OnClickListener {
         myDb = new DatabaseHelper(getBaseContext());
         tvPrompt=(TextView) findViewById(R.id.prompt);
         Typeface custom_font = Typeface.createFromAsset(getAssets(),  "JosefinSans-Light.ttf");
+        pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        editor = pref.edit();
         mRequestPermissionHandler = new RequestPermissionHandler();
         // tvConservation.setTypeface(custom_font);
         tvPrompt.setTypeface(custom_font);
@@ -88,31 +93,32 @@ public class SignIn extends Activity implements View.OnClickListener {
                     }
                     if(network_connection==true){SignIn(email, password);}else{
 
-                        Cursor res = myDb.getLocalCreds("row");
-
-                        if (res.getCount() == 0) {
-
-                            return;
-                        }
-
-                        StringBuffer buffer = new StringBuffer();
-                        while (res.moveToNext()) {
-
-
-                           String JobRefNo = res.getString(1);
-                           String Password = res.getString(2);
-
-                           if(JobRefNo.equals(email)&&Password.equals(password))
-                            {Toast.makeText(getBaseContext(), "You are currently logged into the local environment", Toast.LENGTH_LONG).show();
-                              Intent intent = new Intent(
-                                        getBaseContext(),ChwHomePage.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                                startActivity(intent);
-                            }
-                            else{Toast.makeText(getBaseContext(), "Incorrect credentials", Toast.LENGTH_LONG).show();}
-
-                        }
+//                        Cursor res = myDb.getLocalCreds("row");
+//
+//                        if (res.getCount() == 0) {
+//
+//                            return;
+//                        }
+//
+//                        StringBuffer buffer = new StringBuffer();
+//                        while (res.moveToNext()) {
+//
+//
+//                           String JobRefNo = res.getString(1);
+//                           String Password = res.getString(2);
+//
+//                           if(JobRefNo.equals(email)&&Password.equals(password))
+//                            {Toast.makeText(getBaseContext(), "You are currently logged into the local environment", Toast.LENGTH_LONG).show();
+//                              Intent intent = new Intent(
+//                                        getBaseContext(),ChwHomePage.class);
+//                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//
+//                                startActivity(intent);
+//                            }
+//                            else{Toast.makeText(getBaseContext(), "Incorrect credentials", Toast.LENGTH_LONG).show();}
+//
+//                        }
+                        Toast.makeText(getBaseContext(), "Kindly check your internet connectivity and try again", Toast.LENGTH_LONG).show();
 
                     }
 
@@ -155,30 +161,41 @@ public class SignIn extends Activity implements View.OnClickListener {
 
                 JSONObject jObj = null;
                 try {
+                    String SystemUserId,CompanyBranchId,UserFirstName,UserMiddleName,UserSurname,GenderId,StaffNo,UserNationalId,UserEmail,UserPhoneNumber,UserPhysicalAddress,UserRegistrationDate;
                     jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
+                    SystemUserId = jObj.getString("SystemUserId");
+                    CompanyBranchId = jObj.getString("CompanyBranchId");
+                    UserFirstName = jObj.getString("UserFirstName");
+                    UserMiddleName = jObj.getString("UserMiddleName");
+                    UserSurname = jObj.getString("UserSurname");
+                    GenderId = jObj.getString("GenderId");
+                    StaffNo = jObj.getString("StaffNo");
+                    UserNationalId = jObj.getString("UserNationalId");
+                    UserEmail = jObj.getString("UserEmail");
+                    UserPhoneNumber = jObj.getString("UserPhoneNumber");
+                    UserPhysicalAddress = jObj.getString("UserPhysicalAddress");
+                    UserRegistrationDate = jObj.getString("UserRegistrationDate");
 
-                    if (error) {//When response returns error
+                    if (error == true) {//When response returns error
                         String errorMessage = jObj.getString("error_msg");
                         Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
                         hideDialog();
-                    } else {
-                        Toast.makeText(getBaseContext(), "Tuko ndani", Toast.LENGTH_LONG).show();
+                    } else if (error == false) {
+                        Toast.makeText(getBaseContext(), response, Toast.LENGTH_LONG).show();
 
-                        String row="row";
-                        boolean cred_success=myDb.updateLocalCreds(email,password,row);
+                        editor.putString("SystemUserId", SystemUserId);
+                        editor.commit();
 
-
-
-                            Intent intent = new Intent(
-                                    getBaseContext(),ChwHomePage.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                            startActivity(intent);
-
-
-
+                        Intent intent = new Intent(
+                                getBaseContext(),ChwHomePage.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                         hideDialog();
+
+
+
+
                         //finish();
                     }
                 } catch (JSONException e) {
@@ -223,16 +240,28 @@ public class SignIn extends Activity implements View.OnClickListener {
 
 
 
-    public void updateCredentials(String UserId,String RoleId,String FirstName,String MiddleName,String SurName,String JobRefNo,String WardId,String WardName,String WardRefNo,String mKey) {
+    public void determineFirstOrProgressiveLogin(String id,String name,String email,String mKey) {
 
         Cursor res = myDb.getAllCredentials();
 
         if (res.getCount() == 0) {
-            boolean success= myDb.insertData(UserId,RoleId,FirstName,MiddleName,SurName,JobRefNo,WardId,WardName,WardRefNo,mKey);
-            if(success==true){Toast.makeText(getBaseContext(), "Login was successful", Toast.LENGTH_LONG).show();}else{Toast.makeText(getBaseContext(), "Error while logging in", Toast.LENGTH_LONG).show();}
+            boolean success= myDb.insertData(id,name,email,mKey);
+            if(success==true){Toast.makeText(getBaseContext(), "Login was successful", Toast.LENGTH_LONG).show();}else{Toast.makeText(getBaseContext(), "Error while logging in", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(
+                        getBaseContext(),ChwHomePage.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                hideDialog();
+            }
             return;
-        }else{boolean success= myDb.updateCredentials(UserId,RoleId,FirstName,MiddleName,SurName,JobRefNo,WardId,WardName,WardRefNo,mKey);
-            if(success==true){Toast.makeText(getBaseContext(), "Login was successful", Toast.LENGTH_LONG).show();}else{Toast.makeText(getBaseContext(), "Error while logging in", Toast.LENGTH_LONG).show();}}
+        }else{boolean success= myDb.updateCredentials(id,name,email,mKey);
+            if(success==true){Toast.makeText(getBaseContext(), "Login was successful", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(
+                        getBaseContext(),ChwHomePage.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                hideDialog();
+            }else{Toast.makeText(getBaseContext(), "Error while logging in", Toast.LENGTH_LONG).show();}}
 
 
 
@@ -280,216 +309,8 @@ public class SignIn extends Activity implements View.OnClickListener {
 
 
 
-    private void getVillageJurisdictions(){
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.chw_jurisdiction_villages, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-
-
-
-                //Displaying our grid
-                try {
-                    JSONObject object = new JSONObject(s);
-                    JSONArray jsonarray= object.getJSONArray("result");
-                    myDb.deleteEntireTable("chw_village_jurisdiction");
-                    for(int i = 0; i<jsonarray.length(); i++){
-
-                        //Creating a json object of the current index
-                        JSONObject obj = null;
-                        try {
-                            //getting json object from current index
-                            obj = jsonarray.getJSONObject(i);
-
-
-                            //getting image url and title from json object
-
-                            String VillageId=obj.getString("VillageId");
-                            String VillageName=obj.getString("VillageName");
-                            String VillageRefNo=obj.getString("VillageRefNo");
-
-
-                           boolean success= myDb.insertVillageJurisdiction(VillageId,VillageName,VillageRefNo);
-                           if(success==true){Toast.makeText(getBaseContext(), "Locations configuration is ready", Toast.LENGTH_LONG).show();}else{Toast.makeText(getBaseContext(), "Error while configuring locations", Toast.LENGTH_LONG).show();}
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.d("ggg", volleyError.toString());
-            }
-        }) {
-
-            @Override
-            protected Map<String, String> getParams() {
-                // Posting params to register url
-                Map<String, String> params = new HashMap<String, String>();
-
-                params.put("UserId",UserId);
-
-
-
-                return params;
-            }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
-        //Adding our request to the queue
-        requestQueue.add(stringRequest);
-    }
-
-
-
-
-
-    private void getFacilityJurisdictions(){
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.chw_jurisdiction_facilities, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-
-
-
-                //Displaying our grid
-                try {
-                    JSONObject object = new JSONObject(s);
-                    JSONArray jsonarray= object.getJSONArray("result");
-                    myDb.deleteEntireTable("chw_facility_jurisdiction");
-                    for(int i = 0; i<jsonarray.length(); i++){
-
-                        //Creating a json object of the current index
-                        JSONObject obj = null;
-                        try {
-                            //getting json object from current index
-                            obj = jsonarray.getJSONObject(i);
-
-
-                            //getting image url and title from json object
-
-                            String FacilityId=obj.getString("FacilityId");
-                            String FacilityName=obj.getString("FacilityName");
-                            String PhysicalAddress=obj.getString("PhysicalAddress");
-                            String FacilityRefNo=obj.getString("FacilityRefNo");
-
-
-                            boolean success= myDb.insertFacilityJurisdiction(FacilityId,FacilityName,PhysicalAddress,FacilityRefNo);
-                            if(success==true){Toast.makeText(getBaseContext(), "Facilities configuration is ready", Toast.LENGTH_LONG).show();}else{Toast.makeText(getBaseContext(), "Error while configuring Facilities", Toast.LENGTH_LONG).show();}
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.d("ggg", volleyError.toString());
-            }
-        }) {
-
-            @Override
-            protected Map<String, String> getParams() {
-                // Posting params to register url
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("column_name","WardId");
-                params.put("search_value",WardId);
-
-
-
-                return params;
-            }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
-        //Adding our request to the queue
-        requestQueue.add(stringRequest);
-    }
-
-
-
-
-    private void getMyFacility(){
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_my_facility, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-
-
-
-                //Displaying our grid
-                try {
-                    JSONObject object = new JSONObject(s);
-                    JSONArray jsonarray= object.getJSONArray("result");
-
-                    for(int i = 0; i<jsonarray.length(); i++){
-
-                        //Creating a json object of the current index
-                        JSONObject obj = null;
-                        try {
-                            //getting json object from current index
-                            obj = jsonarray.getJSONObject(i);
-
-
-                            //getting image url and title from json object
-
-                            String FacilityId=obj.getString("FacilityId");
-                            String FacilityName=obj.getString("FacilityName");
-                            String PhysicalAddress=obj.getString("PhysicalAddress");
-                            String FacilityRefNo=obj.getString("FacilityRefNo");
-
-
-
-                            boolean success= myDb.updateMyFacility(FacilityId,FacilityName,PhysicalAddress,FacilityRefNo,"row");
-                            if(success==true){Toast.makeText(getBaseContext(), "Your facility configuration is ready", Toast.LENGTH_LONG).show();}else{Toast.makeText(getBaseContext(), "Error while configuring Your facility configuration", Toast.LENGTH_LONG).show();}
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.d("ggg", volleyError.toString());
-            }
-        }) {
-
-            @Override
-            protected Map<String, String> getParams() {
-                // Posting params to register url
-                Map<String, String> params = new HashMap<String, String>();
-
-                params.put("UserId",UserId);
-
-
-
-                return params;
-            }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
-        //Adding our request to the queue
-        requestQueue.add(stringRequest);
-    }
 
 
 

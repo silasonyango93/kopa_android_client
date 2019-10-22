@@ -11,9 +11,11 @@ import java.io.IOException;
 public class Config {
     public static DatabaseHelper myDb;
     public static String UserId;
-    public static final String ip = "http://192.168.10.192:5000/";
+    public static String CREDENTIALS_ROW_KEY = "1";
+    public static final String ip = "http://34.67.167.86/";
     public static final String login_url =ip + "System_user_login";
-    public static final String upload_service =ip + "upload_service";
+    public static final String add_company_clients =ip + "add_company_clients";
+    public static final String get_all_company_clients =ip + "get_all_company_clients";
     public static final String chw_jurisdiction_villages =ip + "inner_join_villages_with_chw_jurisdiction_villages";
     public static final String chw_jurisdiction_facilities =ip + "get_specific_facilities";
     public static final String client_registration =ip + "client_registration";
@@ -53,18 +55,18 @@ public class Config {
     }
 
 
-    public static String getCurrentSessionId(Context context){
-        myDb = new DatabaseHelper(context);
-        Cursor res = myDb.getAllCredentials();
-
-        while (res.moveToNext()) {
-            UserId=res.getString(1);
-
-
-        }
-
-        return UserId;
-    }
+//    public static String getCurrentSessionId(Context context){
+//        myDb = new DatabaseHelper(context);
+//        Cursor res = myDb.getCurrentSession();
+//
+//        while (res.moveToNext()) {
+//            UserId=res.getString(1);
+//
+//
+//        }
+//
+//        return UserId;
+//    }
 
 
 

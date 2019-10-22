@@ -6,11 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+
 import java.util.ArrayList;
 
 public class MyRecyclerviewAdapter  extends RecyclerView.Adapter<MyRecyclerviewHolder> {
     Context context;
     private ArrayList<ClientModel> clients_list;
+    private ImageLoader imageLoader;
+    public NetworkImageView networkImageView;
 
     public MyRecyclerviewAdapter(Context context,ArrayList<ClientModel> clients_list) {
 
@@ -34,8 +39,8 @@ public class MyRecyclerviewAdapter  extends RecyclerView.Adapter<MyRecyclerviewH
     @Override
     public void onBindViewHolder(MyRecyclerviewHolder holder, int position) {
         holder.tvName.setText(clients_list.get(position).getByClientName());
-        holder.tvRegisteredDate.setText(clients_list.get(position).getByClientRegistrationDate());
-        holder.tvVillageName.setText(clients_list.get(position).getByClientVillageName());
+        holder.tvRegisteredDate.setText(clients_list.get(position).getByRegistrationDate());
+        holder.tvVillageName.setText(clients_list.get(position).getByClientEmail());
         holder.ClientId=(clients_list.get(position).getByClientId());
     }
 

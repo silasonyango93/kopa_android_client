@@ -117,7 +117,7 @@ public class FragmentFour extends Fragment {
 
 
 
-                            clients_list.add(new ClientModel(ClientId,UserId,FirstName,MiddleName,SurName,PhoneNumber,Email,PhysicalAddress,DOB,Gender,VillageId,VillageName,WardId,WardName,VillageRefNo,WardRefNo,IsAChildOf,RegistrationDate));
+                            //clients_list.add(new ClientModel(ClientId,UserId,FirstName,MiddleName,SurName,PhoneNumber,Email,PhysicalAddress,DOB,Gender,VillageId,VillageName,WardId,WardName,VillageRefNo,WardRefNo,IsAChildOf,RegistrationDate));
 
 
                         } catch (JSONException e) {

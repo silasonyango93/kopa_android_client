@@ -145,19 +145,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
         <ImageView
             android:id="@+id/personal_photo"
             android:layout_margin="5dp"
             android:src="@mipmap/person"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Profile Photo"/>
+            <ImageView
+                android:id="@+id/profpic_upload_tick"
+                android:layout_margin="5dp"
+                android:src="@mipmap/upload_tick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-        <ImageView
-            android:id="@+id/nationalid_photo"
-            android:layout_margin="5dp"
-            android:src="@mipmap/nationalid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -250,14 +261,14 @@
                 android:weightSum="1">
 
                 <EditText
-                    android:id="@+id/et_parent"
+                    android:id="@+id/et_natid"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight=".95"
                     android:background="@drawable/group_bottom"
                     android:drawableLeft="@mipmap/work"
-                    android:hint="Parent(New-borns)"
+                    android:hint="NationalID No"
                     android:paddingEnd="5dp"
                     android:paddingLeft="5dp"
                     android:paddingTop="8dp"

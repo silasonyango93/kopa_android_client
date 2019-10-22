@@ -46,7 +46,7 @@ public class FragmentOne extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_one, container, false);
-        UserId=Config.getCurrentSessionId(getActivity());
+        UserId="";
         clients_list = new ArrayList<>();
         lLayout = new GridLayoutManager(getActivity(), 1);
 
@@ -78,7 +78,7 @@ public class FragmentOne extends Fragment {
     private void getSpecificChwClients(){
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_my_clients, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_all_company_clients, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
 
@@ -87,7 +87,7 @@ public class FragmentOne extends Fragment {
                 //Displaying our grid
                 try {
                     JSONObject object = new JSONObject(s);
-                    JSONArray jsonarray= object.getJSONArray("result");
+                    JSONArray jsonarray= object.getJSONArray("results");
 
                     for(int i = 0; i<jsonarray.length(); i++){
 
@@ -99,27 +99,21 @@ public class FragmentOne extends Fragment {
 
 
                             String ClientId=obj.getString("ClientId");
-                            String UserId=obj.getString("UserId");
-                            String FirstName=obj.getString("FirstName");
-                            String MiddleName=obj.getString("MiddleName");
-                            String SurName=obj.getString("SurName");
-                            String PhoneNumber=obj.getString("PhoneNumber");
-                            String Email=obj.getString("Email");
-                            String PhysicalAddress=obj.getString("PhysicalAddress");
-                            String DOB=obj.getString("DOB");
-                            String Gender=obj.getString("Gender");
-                            String VillageId=obj.getString("VillageId");
-                            String VillageName=obj.getString("VillageName");
-                            String WardId=obj.getString("WardId");
-                            String WardName=obj.getString("WardName");
-                            String VillageRefNo=obj.getString("VillageRefNo");
-                            String WardRefNo=obj.getString("WardRefNo");
-                            String IsAChildOf=obj.getString("IsAChildOf");
-                            String RegistrationDate=obj.getString("RegistrationDate");
+                            String ClientFirstName=obj.getString("ClientFirstName");
+                            String ClientMiddleName=obj.getString("ClientMiddleName");
+                            String ClientSurname=obj.getString("ClientSurname");
+                            String ClientNationalId=obj.getString("ClientNationalId");
+                            String ClientProfilePicName=obj.getString("ClientProfilePicName");
+                            String GenderId=obj.getString("GenderId");
+                            String ClientDOB=obj.getString("ClientDOB");
+                            String ClientPhoneNumber=obj.getString("ClientPhoneNumber");
+                            String ClientPhysicalAddress=obj.getString("ClientPhysicalAddress");
+                            String ClientEmail=obj.getString("ClientEmail");
+                            String ClientRegistrationDate=obj.getString("ClientRegistrationDate");
 
 
 
-                            clients_list.add(new ClientModel(ClientId,UserId,FirstName,MiddleName,SurName,PhoneNumber,Email,PhysicalAddress,DOB,Gender,VillageId,VillageName,WardId,WardName,VillageRefNo,WardRefNo,IsAChildOf,RegistrationDate));
+                            clients_list.add(new ClientModel(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate));
 
 
                         } catch (JSONException e) {
@@ -146,8 +140,8 @@ public class FragmentOne extends Fragment {
                 // Posting params to register url
                 Map<String, String> params = new HashMap<String, String>();
 
-                params.put("column_name","UserId");
-                params.put("search_value",UserId);
+//                params.put("column_name","UserId");
+//                params.put("search_value",UserId);
 
 
 
