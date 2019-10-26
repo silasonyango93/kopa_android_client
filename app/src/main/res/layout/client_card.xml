@@ -16,7 +16,7 @@
             android:padding="5dp"
             >
 
-            <ImageView
+            <com.android.volley.toolbox.NetworkImageView
                 android:src="@drawable/three"
                 android:layout_width="60dp"
                 android:layout_height="60dp"

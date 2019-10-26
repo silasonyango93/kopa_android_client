@@ -2,6 +2,7 @@ package com.silas.digitalfactory.kopa;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -33,14 +34,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -63,11 +69,11 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ChwHomePage extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener {
   String mDate,strDOB,strGender,strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId;
   private TabLayout tabLayout;
   private ViewPager viewPager;
-  AlertDialog alertDialog,myAlertDialog,basicAlertDialog;
+  AlertDialog alertDialog,myAlertDialog,basicAlertDialog,alertDialog2;
   LayoutInflater inflater;
   DatabaseHelper myDb;
   public ImageView imgUploadPreview;
@@ -82,6 +88,7 @@ public class ChwHomePage extends AppCompatActivity
   public Button btSubmitNothing,btCancelNothing;
   private int PICK_IMAGE_REQUEST = 1;
   ArrayList<MyBasket> list;
+  ArrayList<EmploymentCategoriesModel> employment_categories_list;
   ListView listview;
   SharedPreferences pref;
 
@@ -97,6 +104,7 @@ public class ChwHomePage extends AppCompatActivity
     tabLayout = (TabLayout) findViewById(R.id.tabs);
     tabLayout.setupWithViewPager(viewPager);
     pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+    employment_categories_list = new ArrayList<>();
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
@@ -120,8 +128,9 @@ public class ChwHomePage extends AppCompatActivity
     navigationView.setNavigationItemSelectedListener(this);
 
     Toast.makeText(getApplicationContext(),
-            pref.getString("SystemUserId", null), Toast.LENGTH_LONG)
+            pref.getString("CompanyId", null), Toast.LENGTH_LONG)
             .show();
+    fetchEmploymentCategories();
   }
 
 
@@ -190,6 +199,15 @@ public class ChwHomePage extends AppCompatActivity
     return true;
   }
 
+  @Override
+  public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+  }
+
+  @Override
+  public void onNothingSelected(AdapterView<?> adapterView) {
+
+  }
 
 
   class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -365,6 +383,7 @@ public class ChwHomePage extends AppCompatActivity
         } else {
           uploadMultipart(strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId,strGender,strDOB);
           basicAlertDialog.cancel();
+          prepEmploymentDetails();
         }
 
       }
@@ -419,49 +438,23 @@ public class ChwHomePage extends AppCompatActivity
   }
 
 
-  public void prepLocation()
+  public void prepEmploymentDetails()
   {
-//    View v= inflater.inflate(R.layout.location_pop, null);
-//
-//    listview = (ListView) v.findViewById(R.id.my_list);
-//     list = new ArrayList<>();
-//    Cursor res = myDb.getAllRows("chw_village_jurisdiction");
-//
-//    if (res.getCount() == 0) {
-//      //Show message
-//      //showMessage("No PaintShares Available", "You currently have no PaintShares saved");
-//      return;
-//    }
-//
-//
-//
-//    while (res.moveToNext()) {
-//
-//      list.add(new MyBasket(res.getString(1),res.getString(2),res.getString(3)));
-//
-//    }
-//
-//
-//
-//
-//    //attaching adapter to the listview
-//
-//
-//    btnNext = (Button) v.findViewById(R.id.btMore);
-//
-//
-//
-//
-//    btnNext.setOnClickListener(new View.OnClickListener() {
-//      @RequiresApi(api = Build.VERSION_CODES.N)
-//      @Override
-//      public void onClick(View view) {
-//        alertDialog.cancel();
-//        //prepClinic();
-//
-//      }
-//    });
-//    locationPop(v);
+    View v= inflater.inflate(R.layout.employment_details_pop, null);
+    //Spinner spinner = (Spinner) v.findViewById(R.id.spn_employment_cat);
+    LinearLayout selectLayout = (LinearLayout) v.findViewById(R.id.select);
+
+    selectLayout.setOnClickListener(new View.OnClickListener() {
+
+      @Override
+      public void onClick(View v) {
+        View p = inflater.inflate(R.layout.employment_category_listview, null);
+        popPage2(p,ChwHomePage.this);
+      }
+    });
+
+
+    personalInfoPop(v);
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -541,6 +534,101 @@ public class ChwHomePage extends AppCompatActivity
       }}
 
   }
+
+
+  public void fetchEmploymentCategories(){
+    StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_my_employment_categories, new Response.Listener<String>() {
+      @Override
+      public void onResponse(String s) {
+        //Displaying our grid
+        try {
+          JSONObject object = new JSONObject(s);
+          JSONArray jsonarray= object.getJSONArray("results");
+
+          for(int i = 0; i<jsonarray.length(); i++){
+
+            //Creating a json object of the current index
+            JSONObject obj = null;
+            try {
+
+              Toast.makeText(getApplicationContext(),
+                      s, Toast.LENGTH_LONG)
+                      .show();
+
+              obj = jsonarray.getJSONObject(i);
+
+
+              String EmploymentCategoryId=obj.getString("EmploymentCategoryId");
+              String CompanyId=obj.getString("CompanyId");
+              String CategoryDescription=obj.getString("CategoryDescription");
+
+
+
+              employment_categories_list.add(new EmploymentCategoriesModel(EmploymentCategoryId,CompanyId,CategoryDescription));
+
+
+            } catch (JSONException e) {
+              e.printStackTrace();
+            }
+          }
+
+
+
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+    }, new Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError volleyError) {
+        Log.d("ggg", volleyError.toString());
+      }
+    }) {
+      @Override
+      protected Map<String, String> getParams() throws AuthFailureError {
+        Map<String, String> stringMap = new HashMap<>();
+        stringMap.put("column_name","CompanyId");
+        stringMap.put("search_value",pref.getString("CompanyId", null));
+
+        return stringMap;
+      }
+    };
+    Volley.newRequestQueue(this).add(stringRequest);
+  }
+
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  public void popPage2(View v, Context c) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+    getAll2(v,c);
+
+    builder.setView(v);
+
+    builder.setCancelable(true);
+    // builder.setTitle("Submit verification code");
+
+    //editText.setText("test label");
+    alertDialog2 = builder.create();
+    alertDialog2.show();
+
+
+
+
+
+
+  }
+
+
+  public void getAll2(final View v, Context c)
+  {
+    final ListView listview = (ListView) v.findViewById(R.id.listview);
+
+    MyListAdapter2 adapter = new MyListAdapter2(this, R.layout.my_custom_list, employment_categories_list);
+
+    //attaching adapter to the listview
+    listview.setAdapter(adapter);
+  }
+
 
 
 }

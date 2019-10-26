@@ -26,6 +26,9 @@ public class ClientModel {
     public String getByClientId() {
         return ClientId;
     }
+    public String getImageUrl() {
+        return Config.ip+ClientProfilePicName;
+    }
     public String getByRegistrationDate() {
         return ClientRegistrationDate;
     }

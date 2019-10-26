@@ -184,14 +184,8 @@ public class SignIn extends Activity implements View.OnClickListener {
                     } else if (error == false) {
                         Toast.makeText(getBaseContext(), response, Toast.LENGTH_LONG).show();
 
-                        editor.putString("SystemUserId", SystemUserId);
-                        editor.commit();
+                        fetchMyCompanyDetails(SystemUserId,CompanyBranchId,UserFirstName,UserMiddleName,UserSurname,GenderId,StaffNo,UserNationalId,UserEmail,UserPhoneNumber,UserPhysicalAddress,UserRegistrationDate);
 
-                        Intent intent = new Intent(
-                                getBaseContext(),ChwHomePage.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        hideDialog();
 
 
 
@@ -240,32 +234,7 @@ public class SignIn extends Activity implements View.OnClickListener {
 
 
 
-    public void determineFirstOrProgressiveLogin(String id,String name,String email,String mKey) {
 
-        Cursor res = myDb.getAllCredentials();
-
-        if (res.getCount() == 0) {
-            boolean success= myDb.insertData(id,name,email,mKey);
-            if(success==true){Toast.makeText(getBaseContext(), "Login was successful", Toast.LENGTH_LONG).show();}else{Toast.makeText(getBaseContext(), "Error while logging in", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(
-                        getBaseContext(),ChwHomePage.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                hideDialog();
-            }
-            return;
-        }else{boolean success= myDb.updateCredentials(id,name,email,mKey);
-            if(success==true){Toast.makeText(getBaseContext(), "Login was successful", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(
-                        getBaseContext(),ChwHomePage.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                hideDialog();
-            }else{Toast.makeText(getBaseContext(), "Error while logging in", Toast.LENGTH_LONG).show();}}
-
-
-
-    }
 
 
     public static int calculateInSampleSize(
@@ -311,7 +280,62 @@ public class SignIn extends Activity implements View.OnClickListener {
 
 
 
+    public void fetchMyCompanyDetails(final String systemUserId, final String companyBranchId, final String userFirstName, final String userMiddleName, final String userSurname, final String genderId, final String staffNo, final String userNationalId, final String userEmail, final String userPhoneNumber, final String userPhysicalAddress, final String userRegistrationDate){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_my_company_details, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                //Displaying our grid
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+                    JSONObject obj = jsonarray.getJSONObject(0);
 
+                    String CompanyId=obj.getString("CompanyId");
+
+
+
+                    editor.putString("SystemUserId", systemUserId);
+                    editor.putString("CompanyBranchId", companyBranchId);
+                    editor.putString("UserFirstName", userFirstName);
+                    editor.putString("UserMiddleName", userMiddleName);
+                    editor.putString("UserSurname", userSurname);
+                    editor.putString("GenderId", genderId);
+                    editor.putString("StaffNo", staffNo);
+                    editor.putString("UserNationalId", userNationalId);
+                    editor.putString("UserEmail", userEmail);
+                    editor.putString("UserPhoneNumber", userPhoneNumber);
+                    editor.putString("UserPhysicalAddress", userPhysicalAddress);
+                    editor.putString("UserRegistrationDate", userRegistrationDate);
+                    editor.putString("CompanyId", CompanyId);
+                    editor.commit();
+
+                    Intent intent = new Intent(
+                            getBaseContext(),ChwHomePage.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    hideDialog();
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> stringMap = new HashMap<>();
+                stringMap.put("SystemUserId",systemUserId);
+
+                return stringMap;
+            }
+        };
+        Volley.newRequestQueue(this).add(stringRequest);
+    }
 
 
 }
