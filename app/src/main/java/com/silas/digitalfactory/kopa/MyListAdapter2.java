@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
 
         //getting the view elements of the list from the view
         TextView textViewName = (TextView) view.findViewById(R.id.textViewName);
+        CheckBox cbVillage = (CheckBox) view.findViewById(R.id.cb_village);
 
         //getting the hero of the specified position
         EmploymentCategoriesModel hero = heroList.get(position);
@@ -61,6 +63,20 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
 
 
                 //removeHero(position);
+            }
+        });
+
+        cbVillage.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //is chkIos checked?
+                if (((CheckBox) v).isChecked()) {
+
+
+
+                }
+
             }
         });
 

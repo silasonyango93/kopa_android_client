@@ -34,156 +34,6 @@
         android:layout_marginTop="20dp"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/select"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:paddingTop="10dp"
-            android:weightSum="1">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginRight="6.5dp"
-                android:layout_marginLeft="6.5dp"
-                android:layout_weight=".28"
-                android:background="@drawable/spinner_background"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spn_employment_cat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:spinnerMode="dropdown" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:src="@drawable/drop_icon" />
-
-            </RelativeLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:paddingTop="10dp"
-            android:weightSum="1">
-
-            <EditText
-                android:id="@+id/et_first_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight=".95"
-                android:background="@drawable/group_top"
-                android:hint="First Name"
-                android:drawableLeft="@mipmap/person"
-                android:inputType="text"
-                android:paddingBottom="8dp"
-                android:paddingEnd="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:paddingStart="5dp"
-                android:paddingTop="8dp" />
-        </LinearLayout>
-
-
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:weightSum="1">
-
-            <EditText
-                android:id="@+id/et_middle_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight=".95"
-                android:background="@drawable/group_row"
-                android:hint="Middle Name"
-                android:drawableLeft="@mipmap/person"
-                android:paddingBottom="8dp"
-                android:paddingEnd="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:paddingStart="5dp"
-                android:paddingTop="8dp" />
-        </LinearLayout>
-
-
-
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:weightSum="1">
-
-            <EditText
-                android:id="@+id/et_surname"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight=".95"
-                android:background="@drawable/group_bottom"
-                android:drawableLeft="@mipmap/address"
-                android:hint="Surname"
-                android:paddingEnd="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:paddingStart="5dp">
-
-            </EditText>
-        </LinearLayout>
-
-
-
-
-
-        <CheckBox
-            android:id="@+id/cb_male"
-            android:layout_marginTop="7dp"
-            android:layout_marginBottom="7dp"
-            android:layout_marginLeft="20dp"
-            android:layout_below="@+id/linearLayout1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Male" />
-
-        <CheckBox
-            android:id="@+id/cb_female"
-            android:layout_marginTop="7dp"
-            android:layout_marginBottom="7dp"
-            android:layout_marginLeft="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Female" />
-
-        <ImageView
-            android:id="@+id/calender"
-            android:layout_margin="5dp"
-            android:src="@mipmap/calender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -194,13 +44,13 @@
         <ImageView
             android:id="@+id/personal_photo"
             android:layout_margin="5dp"
-            android:src="@mipmap/person"
+            android:src="@mipmap/work"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
          <TextView
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="Profile Photo"/>
+             android:text="Employment Category"/>
             <ImageView
                 android:id="@+id/profpic_upload_tick"
                 android:layout_margin="5dp"
@@ -242,55 +92,6 @@
                     android:paddingStart="5dp"
                     android:paddingTop="8dp" />
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
-                android:weightSum="1">
-
-                <EditText
-                    android:id="@+id/et_email"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight=".95"
-                    android:background="@drawable/group_row"
-                    android:hint="Email(Optional)"
-                    android:drawableLeft="@mipmap/person"
-                    android:paddingBottom="8dp"
-                    android:paddingEnd="5dp"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:paddingStart="5dp"
-                    android:paddingTop="8dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
-                android:weightSum="1">
-
-                <EditText
-                    android:id="@+id/et_physical_address"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight=".95"
-                    android:background="@drawable/group_row"
-                    android:hint="Physical Address"
-                    android:drawableLeft="@mipmap/church"
-                    android:paddingBottom="8dp"
-                    android:paddingEnd="5dp"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:paddingStart="5dp"
-                    android:paddingTop="8dp" />
-            </LinearLayout>
-
 
 
             <LinearLayout

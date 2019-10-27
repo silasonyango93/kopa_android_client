@@ -441,10 +441,10 @@ public class ChwHomePage extends AppCompatActivity
   public void prepEmploymentDetails()
   {
     View v= inflater.inflate(R.layout.employment_details_pop, null);
-    //Spinner spinner = (Spinner) v.findViewById(R.id.spn_employment_cat);
-    LinearLayout selectLayout = (LinearLayout) v.findViewById(R.id.select);
 
-    selectLayout.setOnClickListener(new View.OnClickListener() {
+    ImageView imgJob=(ImageView) v.findViewById(R.id.personal_photo);
+
+    imgJob.setOnClickListener(new View.OnClickListener() {
 
       @Override
       public void onClick(View v) {
