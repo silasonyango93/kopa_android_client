@@ -43,7 +43,7 @@
                 android:weightSum="1">
 
                 <EditText
-                    android:id="@+id/et_first_name"
+                    android:id="@+id/et_loan_amount"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"

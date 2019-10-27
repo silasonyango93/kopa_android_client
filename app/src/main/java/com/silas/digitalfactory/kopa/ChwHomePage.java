@@ -44,6 +44,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -73,7 +74,7 @@ public class ChwHomePage extends AppCompatActivity
   String mDate,strDOB,strGender,strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId;
   private TabLayout tabLayout;
   private ViewPager viewPager;
-  AlertDialog alertDialog,myAlertDialog,basicAlertDialog,alertDialog2,empDetailsDialog;
+  AlertDialog alertDialog,myAlertDialog,basicAlertDialog,alertDialog2,empDetailsDialog,loanAppDialog;
   LayoutInflater inflater;
   DatabaseHelper myDb;
   public ImageView imgUploadPreview;
@@ -82,6 +83,7 @@ public class ChwHomePage extends AppCompatActivity
   public int Year,Month,Day,Hour,Minute,Seconds;
   Button btnNext;
   View b;
+  String loanExpectedReturnDate, strClientUUID;
   String path;
   private Bitmap bitmap;
   private Uri filePath;
@@ -91,6 +93,7 @@ public class ChwHomePage extends AppCompatActivity
   ArrayList<EmploymentCategoriesModel> employment_categories_list;
   ListView listview;
   SharedPreferences pref;
+  SharedPreferences.Editor editor;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +107,7 @@ public class ChwHomePage extends AppCompatActivity
     tabLayout = (TabLayout) findViewById(R.id.tabs);
     tabLayout.setupWithViewPager(viewPager);
     pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+    editor = pref.edit();
     employment_categories_list = new ArrayList<>();
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -372,7 +376,7 @@ public class ChwHomePage extends AppCompatActivity
         strEmail=etEmail.getText().toString();
         strPhysicalAddress=etPhysicalAddress.getText().toString();
         strNatId=etNatId.getText().toString();
-
+        strClientUUID = UUID.randomUUID().toString();
 
         int permissionCheck = ContextCompat.checkSelfPermission(ChwHomePage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -438,6 +442,7 @@ public class ChwHomePage extends AppCompatActivity
 
   public void prepEmploymentDetails()
   {
+
     View v= inflater.inflate(R.layout.employment_details_pop, null);
 
     ImageView imgJob=(ImageView) v.findViewById(R.id.personal_photo);
@@ -459,7 +464,7 @@ public class ChwHomePage extends AppCompatActivity
       @Override
       public void onClick(View v) {
 
-          String strEmploymentStatus = "";
+          String strEmploymentStatus = "1";
 
           String strEmploymentCategoryId = pref.getString("EmploymentCategoryId", null);
 
@@ -541,6 +546,7 @@ public class ChwHomePage extends AppCompatActivity
                 .addParameter("ClientPhoneNumber",strPhoneNumber)
                 .addParameter("ClientPhysicalAddress",strPhysicalAddress)
                 .addParameter("ClientEmail",strEmail)
+                .addParameter("ClientUniqueId",strClientUUID)
                 .setNotificationConfig(new UploadNotificationConfig())
                 .setMaxRetries(2)
                 .startUpload(); //Starting the upload
@@ -619,7 +625,7 @@ public class ChwHomePage extends AppCompatActivity
   public void popPage2(View v, Context c) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-    getAll2(v,c);
+
 
     builder.setView(v);
 
@@ -628,6 +634,7 @@ public class ChwHomePage extends AppCompatActivity
 
     //editText.setText("test label");
     alertDialog2 = builder.create();
+    getAll2(v,c);
     alertDialog2.show();
 
 
@@ -642,28 +649,45 @@ public class ChwHomePage extends AppCompatActivity
   {
     final ListView listview = (ListView) v.findViewById(R.id.listview);
 
-    MyListAdapter2 adapter = new MyListAdapter2(this, R.layout.my_custom_list, employment_categories_list,pref,empDetailsDialog);
+    MyListAdapter2 adapter = new MyListAdapter2(this, R.layout.my_custom_list, employment_categories_list,pref,alertDialog2);
 
     //attaching adapter to the listview
     listview.setAdapter(adapter);
   }
 
 
-    public void prepLoanApplication(String strEmploymentStatus, String strEmploymentCategoryId, String strOccupation, String strEmploymentStation)
+    public void prepLoanApplication(final String strEmploymentStatus, final String strEmploymentCategoryId, final String strOccupation, final String strEmploymentStation)
     {
+        fetchClientId(strClientUUID);
         View v= inflater.inflate(R.layout.loan_application_pop, null);
 
-        Button btnNext = (Button) v.findViewById(R.id.btMore);
+
+        Button btnSubmit = (Button) v.findViewById(R.id.btMore);
+        ImageView imgCalender = (ImageView) v.findViewById(R.id.calender);
+      final EditText etLoanAmount = (EditText) v.findViewById(R.id.et_loan_amount);
 
 
+      imgCalender.setOnClickListener(new View.OnClickListener() {
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        public void onClick(View view) {
+          //alertDialog.cancel();
+          getExpectedLoanReturnDate();
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
+
+        }
+      });
+
+
+      btnSubmit.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
+              String strLoanAmount = etLoanAmount.getText().toString();
 
-
+              submitLoanApplication(strEmploymentStatus, strEmploymentCategoryId, strOccupation, strEmploymentStation, strLoanAmount, loanExpectedReturnDate);
+              loanAppDialog.cancel();
             }
         });
 
@@ -677,11 +701,165 @@ public class ChwHomePage extends AppCompatActivity
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(v);
         builder.setCancelable(true);
-        empDetailsDialog = builder.create();
-        empDetailsDialog.setCancelable(true);
-        empDetailsDialog.setCanceledOnTouchOutside(true);
-        empDetailsDialog.show();
+      loanAppDialog = builder.create();
+      loanAppDialog.setCancelable(true);
+      loanAppDialog.setCanceledOnTouchOutside(true);
+      loanAppDialog.show();
 
     }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public void getExpectedLoanReturnDate()
+  {
+    // Get Current Date
+    final Calendar c = Calendar.getInstance();
+    mYear = c.get(Calendar.YEAR);
+    mMonth = c.get(Calendar.MONTH);
+    mDay = c.get(Calendar.DAY_OF_MONTH);
+
+
+    DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+            new DatePickerDialog.OnDateSetListener() {
+
+              @Override
+              public void onDateSet(DatePicker view, int year,
+                                    int monthOfYear, int dayOfMonth) {
+
+                //txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                //txtDate.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+
+                Year=year;
+                Month=(monthOfYear + 1);
+                Day=dayOfMonth;
+
+                loanExpectedReturnDate =(Year + "-" + Month + "-" + Day);
+
+              }
+            }, mYear, mMonth, mDay);
+    datePickerDialog.show();
+
+
+
+  }
+
+
+  private void submitLoanApplication(final String strEmploymentStatus, final String strEmploymentCategoryId, final String strOccupation, final String strEmploymentStation, final String strLoanAmount, final String loanExpectedReturnDate){
+
+
+    StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.add_loan_application, new Response.Listener<String>() {
+      @Override
+      public void onResponse(String s) {
+
+        Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
+
+        //Displaying our grid
+        try {
+          JSONObject object = new JSONObject(s);
+          JSONArray jsonarray= object.getJSONArray("results");
+
+
+
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+    }, new Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError volleyError) {
+        Log.d("ggg", volleyError.toString());
+      }
+    }) {
+
+      @Override
+      protected Map<String, String> getParams() {
+        // Posting params to register url
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("ClientId",pref.getString("ClientId", null));
+        params.put("CompanyId",pref.getString("CompanyId", null));
+        params.put("CompanyBranchId",pref.getString("CompanyBranchId", null));
+        params.put("SystemUserId",pref.getString("SystemUserId", null));
+        params.put("LoanAmount",strLoanAmount);
+        params.put("ExpectedSettlementDate",loanExpectedReturnDate);
+        params.put("LoanRating","0");
+        params.put("IsFullyPaid","0");
+        params.put("RemainingLoanAmount",strLoanAmount);
+        params.put("EmploymentStatus",strEmploymentStatus);
+        params.put("EmploymentCategoryId",strEmploymentCategoryId);
+        params.put("Occupation",strOccupation);
+        params.put("EmploymentStation",strEmploymentStation);
+
+
+
+        return params;
+      }
+
+    };
+
+    RequestQueue requestQueue = Volley.newRequestQueue(this);
+    //Adding our request to the queue
+    requestQueue.add(stringRequest);
+  }
+
+
+
+  private void fetchClientId(final String strClientUUID){
+
+
+    StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.fetch_current_client_id, new Response.Listener<String>() {
+      @Override
+      public void onResponse(String s) {
+
+
+          Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
+        //Displaying our grid
+        try {
+          JSONObject object = new JSONObject(s);
+          JSONArray jsonarray= object.getJSONArray("results");
+
+
+            //Creating a json object of the current index
+            JSONObject obj = null;
+            try {
+              //getting json object from current index
+              obj = jsonarray.getJSONObject(0);
+
+              String ClientId =obj.getString("ClientId");
+
+              editor.putString("ClientId", ClientId);
+              editor.commit();
+
+            } catch (JSONException e) {
+              e.printStackTrace();
+            }
+
+
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+    }, new Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError volleyError) {
+        Log.d("ggg", volleyError.toString());
+      }
+    }) {
+
+      @Override
+      protected Map<String, String> getParams() {
+        // Posting params to register url
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("column_name","ClientUniqueId");
+        params.put("search_value",strClientUUID);
+
+        return params;
+      }
+
+    };
+
+    RequestQueue requestQueue = Volley.newRequestQueue(this);
+    //Adding our request to the queue
+    requestQueue.add(stringRequest);
+  }
+
 
 }
