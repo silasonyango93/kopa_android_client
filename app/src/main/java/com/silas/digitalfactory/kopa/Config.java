@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class Config {
     public static DatabaseHelper myDb;
-    public static String UserId;
+    public static String UNEMPLOYED_STATUS = "999";
     public static String CREDENTIALS_ROW_KEY = "1";
     public static final String ip = "http://34.67.167.86/";
     public static final String login_url =ip + "System_user_login";

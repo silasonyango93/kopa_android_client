@@ -76,13 +76,13 @@
                 android:weightSum="1">
 
                 <EditText
-                    android:id="@+id/et_phone_number"
+                    android:id="@+id/et_occupation"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_weight=".95"
                     android:background="@drawable/group_top"
-                    android:hint="Phone Number"
+                    android:hint="Occupation"
                     android:drawableLeft="@mipmap/tribe"
                     android:inputType="text"
                     android:paddingBottom="8dp"
@@ -102,14 +102,14 @@
                 android:weightSum="1">
 
                 <EditText
-                    android:id="@+id/et_natid"
+                    android:id="@+id/et_station"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight=".95"
                     android:background="@drawable/group_bottom"
                     android:drawableLeft="@mipmap/work"
-                    android:hint="NationalID No"
+                    android:hint="Employment Station"
                     android:paddingEnd="5dp"
                     android:paddingLeft="5dp"
                     android:paddingTop="8dp"

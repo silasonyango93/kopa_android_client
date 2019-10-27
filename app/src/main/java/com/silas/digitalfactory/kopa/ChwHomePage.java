@@ -73,7 +73,7 @@ public class ChwHomePage extends AppCompatActivity
   String mDate,strDOB,strGender,strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId;
   private TabLayout tabLayout;
   private ViewPager viewPager;
-  AlertDialog alertDialog,myAlertDialog,basicAlertDialog,alertDialog2;
+  AlertDialog alertDialog,myAlertDialog,basicAlertDialog,alertDialog2,empDetailsDialog;
   LayoutInflater inflater;
   DatabaseHelper myDb;
   public ImageView imgUploadPreview;
@@ -127,9 +127,7 @@ public class ChwHomePage extends AppCompatActivity
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
-    Toast.makeText(getApplicationContext(),
-            pref.getString("CompanyId", null), Toast.LENGTH_LONG)
-            .show();
+
     fetchEmploymentCategories();
   }
 
@@ -443,6 +441,9 @@ public class ChwHomePage extends AppCompatActivity
     View v= inflater.inflate(R.layout.employment_details_pop, null);
 
     ImageView imgJob=(ImageView) v.findViewById(R.id.personal_photo);
+      final EditText etOccupation=(EditText)v.findViewById(R.id.et_occupation);
+      final EditText etEmploymentStation=(EditText)v.findViewById(R.id.et_station);
+    Button btnNext = (Button) v.findViewById(R.id.btMore);
 
     imgJob.setOnClickListener(new View.OnClickListener() {
 
@@ -453,23 +454,39 @@ public class ChwHomePage extends AppCompatActivity
       }
     });
 
+    btnNext.setOnClickListener(new View.OnClickListener() {
 
-    personalInfoPop(v);
+      @Override
+      public void onClick(View v) {
+
+          String strEmploymentStatus = "";
+
+          String strEmploymentCategoryId = pref.getString("EmploymentCategoryId", null);
+
+          if(strEmploymentCategoryId.equals(Config.UNEMPLOYED_STATUS)) {
+              strEmploymentStatus = "0";
+          }
+
+          String strOccupation=etOccupation.getText().toString();
+          String strEmploymentStation=etEmploymentStation.getText().toString();
+          empDetailsDialog.cancel();
+          prepLoanApplication(strEmploymentStatus,strEmploymentCategoryId,strOccupation,strEmploymentStation);
+      }
+    });
+
+
+    employmentDetailsPop(v);
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public void locationPop(View v) {
+  public void employmentDetailsPop(View v) {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setView(v);
     builder.setCancelable(true);
-    myAlertDialog = builder.create();
-
-    MyListAdapter adapter = new MyListAdapter(this, R.layout.my_custom_list, list,strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId,strGender,strDOB,myAlertDialog);
-    listview.setAdapter(adapter);
-    myAlertDialog.setCancelable(false);
-    myAlertDialog.setCanceledOnTouchOutside(false);
-    myAlertDialog.show();
-
+      empDetailsDialog = builder.create();
+      empDetailsDialog.setCancelable(true);
+      empDetailsDialog.setCanceledOnTouchOutside(true);
+      empDetailsDialog.show();
 
   }
 
@@ -544,6 +561,8 @@ public class ChwHomePage extends AppCompatActivity
         try {
           JSONObject object = new JSONObject(s);
           JSONArray jsonarray= object.getJSONArray("results");
+
+          employment_categories_list.add(new EmploymentCategoriesModel(Config.UNEMPLOYED_STATUS,"999","Unemployed"));
 
           for(int i = 0; i<jsonarray.length(); i++){
 
@@ -623,12 +642,46 @@ public class ChwHomePage extends AppCompatActivity
   {
     final ListView listview = (ListView) v.findViewById(R.id.listview);
 
-    MyListAdapter2 adapter = new MyListAdapter2(this, R.layout.my_custom_list, employment_categories_list);
+    MyListAdapter2 adapter = new MyListAdapter2(this, R.layout.my_custom_list, employment_categories_list,pref,empDetailsDialog);
 
     //attaching adapter to the listview
     listview.setAdapter(adapter);
   }
 
 
+    public void prepLoanApplication(String strEmploymentStatus, String strEmploymentCategoryId, String strOccupation, String strEmploymentStation)
+    {
+        View v= inflater.inflate(R.layout.loan_application_pop, null);
+
+        Button btnNext = (Button) v.findViewById(R.id.btMore);
+
+
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+
+
+            }
+        });
+
+
+        loanApplicationPop(v);
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void loanApplicationPop(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(v);
+        builder.setCancelable(true);
+        empDetailsDialog = builder.create();
+        empDetailsDialog.setCancelable(true);
+        empDetailsDialog.setCanceledOnTouchOutside(true);
+        empDetailsDialog.show();
+
+    }
 
 }

@@ -1,8 +1,10 @@
 package com.silas.digitalfactory.kopa;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,10 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
     //the list values in the List of type hero
     List<EmploymentCategoriesModel> heroList;
 
+    SharedPreferences MY_SHARED_PREFERENCE;
+    SharedPreferences.Editor editor;
+    AlertDialog alertDialog;
+
     //activity context
     Context context;
 
@@ -24,11 +30,14 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
     int resource;
 
     //constructor initializing the values
-    public MyListAdapter2(Context context, int resource, List<EmploymentCategoriesModel> heroList) {
+    public MyListAdapter2(Context context, int resource, List<EmploymentCategoriesModel> heroList,SharedPreferences MY_SHARED_PREFERENCE,AlertDialog alertDialog) {
         super(context, resource, heroList);
         this.context = context;
         this.resource = resource;
         this.heroList = heroList;
+        this.MY_SHARED_PREFERENCE = MY_SHARED_PREFERENCE;
+        editor = MY_SHARED_PREFERENCE.edit();
+        this.alertDialog = alertDialog;
 
     }
 
@@ -49,7 +58,7 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
         CheckBox cbVillage = (CheckBox) view.findViewById(R.id.cb_village);
 
         //getting the hero of the specified position
-        EmploymentCategoriesModel hero = heroList.get(position);
+        final EmploymentCategoriesModel hero = heroList.get(position);
 
         //adding values to the list item
         textViewName.setText(hero.getCategoryDescription());
@@ -60,9 +69,10 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
         textViewName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 //removeHero(position);
+                editor.putString("EmploymentCategoryId", hero.getEmploymentCategoryId());
+                editor.commit();
+                alertDialog.cancel();
             }
         });
 
@@ -73,7 +83,9 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
                 //is chkIos checked?
                 if (((CheckBox) v).isChecked()) {
 
-
+                    editor.putString("EmploymentCategoryId", hero.getEmploymentCategoryId());
+                    editor.commit();
+                    alertDialog.cancel();
 
                 }
 
