@@ -6,34 +6,35 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name="com.silas.digitalfactory.kopa.Mimi"
+        android:name=".Mimi"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.silas.digitalfactory.kopa.SplashLauncher">
+        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".SplashLauncher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.silas.digitalfactory.kopa.SignIn" />
+        <activity android:name=".SignIn" />
         <activity
-            android:name="com.silas.digitalfactory.kopa.ChwHomePage"
+            android:name=".ChwHomePage"
             android:label="@string/title_activity_chw_home_page"
-            android:parentActivityName="com.silas.digitalfactory.kopa.SplashLauncher"
+            android:parentActivityName=".SplashLauncher"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.silas.digitalfactory.kopa.SplashLauncher" />
         </activity>
         <activity
-            android:name="com.silas.digitalfactory.kopa.FacilityHomePage"
+            android:name=".FacilityHomePage"
             android:label="@string/title_activity_facility_home_page"
-            android:parentActivityName="com.silas.digitalfactory.kopa.SplashLauncher"
+            android:parentActivityName=".SplashLauncher"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
