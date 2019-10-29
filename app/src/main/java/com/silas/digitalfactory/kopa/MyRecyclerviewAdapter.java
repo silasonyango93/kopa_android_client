@@ -41,7 +41,7 @@ public class MyRecyclerviewAdapter  extends RecyclerView.Adapter<MyRecyclerviewH
         holder.tvName.setText(clients_list.get(position).getByClientName());
         holder.tvRegisteredDate.setText(clients_list.get(position).getByRegistrationDate());
         holder.tvVillageName.setText(clients_list.get(position).getByClientEmail());
-        holder.ClientId=(clients_list.get(position).getByClientId());
+        holder.clientObject=(clients_list.get(position));
 
         imageLoader = MCustomVolleyRequest.getInstance(context).getImageLoader();
         imageLoader.get(clients_list.get(position).getImageUrl(), ImageLoader.getImageListener(holder.nivPersonalPhoto, R.mipmap.ic_launcher, android.R.drawable.ic_dialog_alert));

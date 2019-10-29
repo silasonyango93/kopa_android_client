@@ -18,6 +18,7 @@
 
             <com.android.volley.toolbox.NetworkImageView
                 android:src="@drawable/three"
+                android:scaleType="centerCrop"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:id="@+id/person_photo"
