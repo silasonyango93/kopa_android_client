@@ -15,15 +15,15 @@
         android:scrollbars="none">
     </android.support.v4.view.ViewPager>
 
-    <TextView
-        android:textColor="#FFFFFF"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:id="@+id/consa"
-        android:textSize="50sp"
-        android:text="Softmed Tanzania\n\nCommunity health referral"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--<TextView-->
+        <!--android:textColor="#FFFFFF"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:gravity="center"-->
+        <!--android:id="@+id/consa"-->
+        <!--android:textSize="50sp"-->
+        <!--android:text="Softmed Tanzania\n\nCommunity health referral"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
 
     <LinearLayout
         android:layout_width="match_parent"

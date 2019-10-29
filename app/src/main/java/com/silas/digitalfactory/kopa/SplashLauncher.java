@@ -51,11 +51,11 @@ public class SplashLauncher extends Activity {
         btSignUp=(Button)findViewById(R.id.btn_signup);
         btLogin=(Button)findViewById(R.id.btn_signin);
 
-        tvSplash = (TextView) findViewById(R.id.consa);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "JosefinSans-Light.ttf");
-
-        // tvConservation.setTypeface(custom_font);
-        tvSplash.setTypeface(custom_font);
+//        tvSplash = (TextView) findViewById(R.id.consa);
+//        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "JosefinSans-Light.ttf");
+//
+//        // tvConservation.setTypeface(custom_font);
+//        tvSplash.setTypeface(custom_font);
 
 
 

@@ -51,7 +51,7 @@
                     android:layout_weight=".95"
                     android:background="@drawable/group_top"
                     android:drawableLeft="@mipmap/mail"
-                    android:hint="Enter your Chw Reference Number"
+                    android:hint="Enter your Email"
                     android:inputType="textEmailAddress"
                     android:paddingEnd="5dp"
                     android:paddingLeft="5dp"
