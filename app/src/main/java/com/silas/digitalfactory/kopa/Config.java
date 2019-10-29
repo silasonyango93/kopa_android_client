@@ -20,6 +20,7 @@ public class Config {
     public static final String get_my_company_details =ip + "get_system_user_company_details";
     public static final String fetch_current_client_id =ip + "get_specific_company_clients";
     public static final String add_loan_application =ip + "add_loan_application";
+    public static final String client_any_search =ip + "client_any_search";
 
 
 

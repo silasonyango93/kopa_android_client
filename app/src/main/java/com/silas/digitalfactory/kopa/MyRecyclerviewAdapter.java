@@ -30,7 +30,7 @@ public class MyRecyclerviewAdapter  extends RecyclerView.Adapter<MyRecyclerviewH
     public MyRecyclerviewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
       View layoutView = LayoutInflater.from(context).inflate(R.layout.client_card,null);
-        MyRecyclerviewHolder rcv = new MyRecyclerviewHolder(layoutView);
+        MyRecyclerviewHolder rcv = new MyRecyclerviewHolder(layoutView, context);
 
         return rcv;
     }

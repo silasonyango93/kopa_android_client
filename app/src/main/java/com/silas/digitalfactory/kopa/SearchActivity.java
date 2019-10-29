@@ -2,12 +2,15 @@ package com.silas.digitalfactory.kopa;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +40,7 @@ public class SearchActivity extends AppCompatActivity {
     View v;
     ArrayList<ClientModel> clients_list;
     TextView tvBackgroundIcon,tvBackgroundText;
+    String CurrentlyTyped;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +67,8 @@ public class SearchActivity extends AppCompatActivity {
         tvSearch.setTypeface(font);
 
         clients_list = new ArrayList<>();
+        textView = (AutoCompleteTextView) v
+                .findViewById(R.id.editText1);
         lLayout = new GridLayoutManager(getBaseContext(), 1);
 
         rView = (RecyclerView) findViewById(R.id.recycler_view1);
@@ -79,20 +85,72 @@ public class SearchActivity extends AppCompatActivity {
 
                 clients_list.clear();
 
-                getSpecificChwClients();
+                searchClient(CurrentlyTyped);
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
 
-        getSpecificChwClients();
+        final long delay = 1000; // 1 seconds after user stops typing
+        final long[] last_text_edit = {0};
+
+
+        final Runnable input_finish_checker = new Runnable() {
+            public void run() {
+                if (System.currentTimeMillis() > (last_text_edit[0] + delay - 500)) {
+                    // TODO: do what you need here
+                    // ............
+                    // ............
+                    clients_list.clear();
+                    searchClient(CurrentlyTyped) ;
+                    swipeRefreshLayout.setRefreshing(false);
+
+
+                }
+            }
+        };
+
+        final Handler handler = new Handler();
+        textView.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s)
+            {
+
+                CurrentlyTyped = s.toString().trim();
+                CurrentlyTyped =CurrentlyTyped.toLowerCase();
+
+                /*  search(CurrentlyTyped) ;*/
+
+                //avoid triggering event when text is empty
+                if (s.length() > 0) {
+                    last_text_edit[0] = System.currentTimeMillis();
+                    handler.postDelayed(input_finish_checker, delay);
+                } else {
+
+                }
+            }
+
+
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+//You need to remove this to run only once
+                handler.removeCallbacks(input_finish_checker);
+
+            }
+        });
+
 
     }
 
 
-    private void getSpecificChwClients(){
+    private void searchClient(final String typedParameter){
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_all_company_clients, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.client_any_search, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
 
@@ -154,10 +212,7 @@ public class SearchActivity extends AppCompatActivity {
                 // Posting params to register url
                 Map<String, String> params = new HashMap<String, String>();
 
-//                params.put("column_name","UserId");
-//                params.put("search_value",UserId);
-
-
+                params.put("searchParameter",typedParameter);
 
                 return params;
             }
