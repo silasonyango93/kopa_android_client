@@ -303,7 +303,6 @@ public class ChwHomePage extends AppCompatActivity
       public void onClick(View v) {
         //is chkIos checked?
         if (((CheckBox) v).isChecked()) {
-          cb_female.toggle();
           strGender="1";
         }
 
@@ -317,7 +316,6 @@ public class ChwHomePage extends AppCompatActivity
       public void onClick(View v) {
         //is chkIos checked?
         if (((CheckBox) v).isChecked()) {
-          cb_male.toggle();
           strGender="2";
         }
 
@@ -578,10 +576,6 @@ public class ChwHomePage extends AppCompatActivity
             JSONObject obj = null;
             try {
 
-              Toast.makeText(getApplicationContext(),
-                      s, Toast.LENGTH_LONG)
-                      .show();
-
               obj = jsonarray.getJSONObject(i);
 
 
@@ -811,8 +805,6 @@ public class ChwHomePage extends AppCompatActivity
       @Override
       public void onResponse(String s) {
 
-
-          Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
         //Displaying our grid
         try {
           JSONObject object = new JSONObject(s);

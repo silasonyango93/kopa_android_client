@@ -52,6 +52,37 @@
             </LinearLayout>
 
             <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/first_star"
+                    android:src="@mipmap/full_star"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:id="@+id/second_star"
+                    android:src="@mipmap/full_star"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:id="@+id/third_star"
+                    android:src="@mipmap/full_star"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:id="@+id/fourth_star"
+                    android:src="@mipmap/half_star"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+                <ImageView
+                    android:id="@+id/fifth_star"
+                    android:src="@mipmap/empty_star"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -95,7 +126,33 @@
                     android:background="@drawable/group_row"
                     android:text="Middle Name"
                     android:gravity="center_vertical"
-                    android:drawableLeft="@mipmap/person"
+                    android:drawableLeft="@mipmap/tribe"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="5dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingTop="8dp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/tv_dob"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight=".95"
+                    android:background="@drawable/group_row"
+                    android:text="Middle Name"
+                    android:gravity="center_vertical"
+                    android:drawableLeft="@mipmap/cake"
                     android:paddingBottom="8dp"
                     android:paddingEnd="5dp"
                     android:paddingLeft="5dp"
@@ -109,19 +166,20 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
+                android:paddingBottom="50dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:weightSum="1">
 
                 <TextView
-                    android:id="@+id/tv_email"
+                    android:id="@+id/tv_national_id"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight=".95"
                     android:background="@drawable/group_bottom"
-                    android:drawableLeft="@mipmap/address"
+                    android:drawableLeft="@mipmap/flag"
                     android:text="Surname"
                     android:gravity="center_vertical"
                     android:paddingEnd="5dp"
@@ -136,13 +194,18 @@
 
 
 
-
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:text="Contanct Information"
+                android:textAppearance="@style/green_title" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:orientation="vertical">
 
@@ -155,7 +218,7 @@
                     android:weightSum="1">
 
                     <TextView
-                        android:id="@+id/et_phone_number"
+                        android:id="@+id/tv_phone_number"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -163,7 +226,7 @@
                         android:background="@drawable/group_top"
                         android:text="Surname"
                         android:gravity="center_vertical"
-                        android:drawableLeft="@mipmap/tribe"
+                        android:drawableLeft="@mipmap/phone"
                         android:paddingBottom="8dp"
                         android:paddingEnd="5dp"
                         android:paddingLeft="5dp"
@@ -180,7 +243,7 @@
                     android:weightSum="1">
 
                     <TextView
-                        android:id="@+id/et_email"
+                        android:id="@+id/tv_email"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -188,32 +251,7 @@
                         android:background="@drawable/group_row"
                         android:text="Surname"
                         android:gravity="center_vertical"
-                        android:drawableLeft="@mipmap/person"
-                        android:paddingBottom="8dp"
-                        android:paddingEnd="5dp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:paddingStart="5dp"
-                        android:paddingTop="8dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center_horizontal"
-                    android:weightSum="1">
-
-                    <TextView
-                        android:id="@+id/et_physical_address"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_weight=".95"
-                        android:background="@drawable/group_row"
-                        android:text="Surname"
-                        android:gravity="center_vertical"
-                        android:drawableLeft="@mipmap/church"
+                        android:drawableLeft="@mipmap/mail"
                         android:paddingBottom="8dp"
                         android:paddingEnd="5dp"
                         android:paddingLeft="5dp"
@@ -232,13 +270,13 @@
                     android:weightSum="1">
 
                     <TextView
-                        android:id="@+id/et_natid"
+                        android:id="@+id/tv_physical_address"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight=".95"
                         android:background="@drawable/group_bottom"
-                        android:drawableLeft="@mipmap/work"
+                        android:drawableLeft="@mipmap/church"
                         android:text="Surname"
                         android:gravity="center_vertical"
                         android:paddingEnd="5dp"
@@ -251,18 +289,25 @@
                     </TextView>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginTop="40dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/new_loan"
+                        android:src="@mipmap/edit"
+                        android:layout_width="40dp"
+                        android:layout_marginRight="60dp"
+                        android:layout_height="40dp" />
+                    <ImageView
+                        android:src="@mipmap/clip"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp" />
+                </LinearLayout>
+
 
             </LinearLayout>
-            <Button
-                android:id="@+id/btMore"
-                android:layout_gravity="end"
-                android:text="Next"
-                android:layout_margin="7dp"
-                android:textColor="#000"
-                android:textSize="15sp"
-                android:background="@drawable/button_white"
-                android:layout_width="75dp"
-                android:layout_height="45dp" />
 
         </LinearLayout>
 

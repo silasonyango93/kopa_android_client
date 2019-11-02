@@ -35,16 +35,18 @@ public class FragmentTwo extends Fragment {
 
         PieChart pieChart = (PieChart) v.findViewById(R.id.chart);
         ArrayList<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(4f, 0));
+        entries.add(new Entry(6f, 0));
         entries.add(new Entry(8f, 1));
+        entries.add(new Entry(3f, 2));
 
 
 
         PieDataSet dataset = new PieDataSet(entries, "# of Calls");
 
         ArrayList<String> labels = new ArrayList<String>();
-        labels.add("Successful Referrals");
-        labels.add("Pending Referrals");
+        labels.add("Settled Loans");
+        labels.add("Pending Loans");
+        labels.add("Bad Debts");
 
 
 

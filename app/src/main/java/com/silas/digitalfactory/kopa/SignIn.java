@@ -182,7 +182,6 @@ public class SignIn extends Activity implements View.OnClickListener {
                         Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
                         hideDialog();
                     } else if (error == false) {
-                        Toast.makeText(getBaseContext(), response, Toast.LENGTH_LONG).show();
 
                         fetchMyCompanyDetails(SystemUserId,CompanyBranchId,UserFirstName,UserMiddleName,UserSurname,GenderId,StaffNo,UserNationalId,UserEmail,UserPhoneNumber,UserPhysicalAddress,UserRegistrationDate);
 

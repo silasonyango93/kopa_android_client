@@ -17,10 +17,6 @@ public class ClientModel {
         this.ClientPhysicalAddress=ClientPhysicalAddress;
         this.ClientEmail=ClientEmail;
         this.ClientRegistrationDate=ClientRegistrationDate;
-
-
-
-
     }
 
     public String getByClientId() {

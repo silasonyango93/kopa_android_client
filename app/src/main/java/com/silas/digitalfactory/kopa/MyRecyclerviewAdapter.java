@@ -22,7 +22,6 @@ public class MyRecyclerviewAdapter  extends RecyclerView.Adapter<MyRecyclerviewH
      this.clients_list=clients_list;
      this.context=context;
 
-
     }
 
 

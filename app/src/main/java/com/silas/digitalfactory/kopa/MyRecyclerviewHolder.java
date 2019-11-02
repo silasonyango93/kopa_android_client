@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,9 +18,9 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     TextView tvName,tvRegisteredDate,tvVillageName;
     NetworkImageView nivPersonalPhoto;
     Context context;
-    LayoutInflater inflater;
-    AlertDialog alertDialog;
-    View bView;
+    LayoutInflater inflater,infLoanApplication;
+    AlertDialog alertDialog,aldLoanApplication;
+    View bView, viewLoanApplication;
     ClientModel clientObject;
     private ImageLoader imageLoader;
 
@@ -34,11 +35,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         nivPersonalPhoto = (NetworkImageView)itemView.findViewById(R.id.person_photo);
         this.context = context;
         inflater =(LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-
-
-
-
-
+        infLoanApplication =(LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
 
 
@@ -67,6 +64,19 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         TextView tvName = (TextView)  bView.findViewById(R.id.tv_name);
         TextView tvGender = (TextView)  bView.findViewById(R.id.tv_gender);
         TextView tvEmail = (TextView)  bView.findViewById(R.id.tv_email);
+        TextView tvDob = (TextView)  bView.findViewById(R.id.tv_dob);
+        TextView tvNationalId = (TextView)  bView.findViewById(R.id.tv_national_id);
+        TextView tvPhoneNumber = (TextView)  bView.findViewById(R.id.tv_phone_number);
+        TextView tvPhysicalAddress = (TextView)  bView.findViewById(R.id.tv_physical_address);
+        ImageView imvPencil = (ImageView) bView.findViewById(R.id.new_loan);
+
+        imvPencil.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                prepareLoanApplication();
+            }
+        });
 
 
         imageLoader = MCustomVolleyRequest.getInstance(context).getImageLoader();
@@ -76,6 +86,27 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         tvName.setText(clientObject.getByClientName());
         tvGender.setText(clientObject.getGender());
         tvEmail.setText(clientObject.getByClientEmail());
+        tvDob.setText(clientObject.getClientDOB());
+        tvNationalId.setText(clientObject.getClientNationalId());
+        tvPhoneNumber.setText(clientObject.getClientPhoneNumber());
+        tvPhysicalAddress.setText(clientObject.getClientPhysicalAddress());
         popDisplayMoreClientDetails(bView);
+    }
+
+    public void prepareLoanApplication() {
+        viewLoanApplication = infLoanApplication.inflate(R.layout.loan_application_pop,null);
+        popDisplayLoanApplication(viewLoanApplication);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void popDisplayLoanApplication(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(v);
+        builder.setCancelable(true);
+        aldLoanApplication = builder.create();
+        aldLoanApplication.setCancelable(true);
+        aldLoanApplication.setCanceledOnTouchOutside(true);
+        aldLoanApplication.show();
+
     }
 }
