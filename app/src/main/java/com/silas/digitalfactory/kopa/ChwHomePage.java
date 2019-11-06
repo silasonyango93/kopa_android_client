@@ -547,6 +547,10 @@ public class ChwHomePage extends AppCompatActivity
                 .addParameter("ClientPhysicalAddress",strPhysicalAddress)
                 .addParameter("ClientEmail",strEmail)
                 .addParameter("ClientUniqueId",strClientUUID)
+                .addParameter("EmploymentStatus", "0")
+                .addParameter("EmploymentCategoryId","999")
+                .addParameter("Occupation","NA")
+                .addParameter("EmploymentStation","NA")
                 .setNotificationConfig(new UploadNotificationConfig())
                 .setMaxRetries(2)
                 .startUpload(); //Starting the upload

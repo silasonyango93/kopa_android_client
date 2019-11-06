@@ -2,9 +2,9 @@ package com.silas.digitalfactory.kopa;
 
 public class ClientModel {
 
-    String ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate;
+    String ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation;
 
-    public ClientModel(String ClientId,String ClientFirstName,String ClientMiddleName,String ClientSurname,String ClientNationalId,String ClientProfilePicName,String GenderId,String ClientDOB,String ClientPhoneNumber,String ClientPhysicalAddress,String ClientEmail,String ClientRegistrationDate){
+    public ClientModel(String ClientId,String ClientFirstName,String ClientMiddleName,String ClientSurname,String ClientNationalId,String ClientProfilePicName,String GenderId,String ClientDOB,String ClientPhoneNumber,String ClientPhysicalAddress,String ClientEmail,String ClientRegistrationDate, String EmploymentStatus, String EmploymentCategoryId, String Occupation, String EmploymentStation){
         this.ClientId=ClientId;
         this.ClientFirstName=ClientFirstName;
         this.ClientMiddleName=ClientMiddleName;
@@ -17,6 +17,10 @@ public class ClientModel {
         this.ClientPhysicalAddress=ClientPhysicalAddress;
         this.ClientEmail=ClientEmail;
         this.ClientRegistrationDate=ClientRegistrationDate;
+        this.EmploymentStatus=EmploymentStatus;
+        this.EmploymentCategoryId=EmploymentCategoryId;
+        this.Occupation=Occupation;
+        this.EmploymentStation=EmploymentStation;
     }
 
     public String getByClientId() {
@@ -71,5 +75,21 @@ public class ClientModel {
 
     public String getClientPhysicalAddress() {
         return ClientPhysicalAddress;
+    }
+
+    public String getEmploymentStatus() {
+        return EmploymentStatus;
+    }
+
+    public String getEmploymentCategoryId() {
+        return EmploymentCategoryId;
+    }
+
+    public String getOccupation() {
+        return Occupation;
+    }
+
+    public String getEmploymentStation() {
+        return EmploymentStation;
     }
 }

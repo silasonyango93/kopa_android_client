@@ -182,10 +182,14 @@ public class SearchActivity extends AppCompatActivity {
                             String ClientPhysicalAddress=obj.getString("ClientPhysicalAddress");
                             String ClientEmail=obj.getString("ClientEmail");
                             String ClientRegistrationDate=obj.getString("ClientRegistrationDate");
+                            String EmploymentStatus=obj.getString("EmploymentStatus");
+                            String EmploymentCategoryId=obj.getString("EmploymentCategoryId");
+                            String Occupation=obj.getString("Occupation");
+                            String EmploymentStation=obj.getString("EmploymentStation");
 
 
 
-                            clients_list.add(new ClientModel(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate));
+                            clients_list.add(new ClientModel(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation));
 
 
                         } catch (JSONException e) {
