@@ -10,9 +10,9 @@ import java.io.IOException;
 
 public class Config {
     public static DatabaseHelper myDb;
-    public static String UNEMPLOYED_STATUS = "999";
+    public static String UNEMPLOYED_STATUS = "1";
     public static String CREDENTIALS_ROW_KEY = "1";
-    public static final String ip = "http://34.67.167.86/";
+    public static final String ip = "http://backend.kopa.icube.ga/";
     public static final String login_url =ip + "System_user_login";
     public static final String add_company_clients =ip + "add_company_clients";
     public static final String get_all_company_clients =ip + "get_all_company_clients";
