@@ -2,6 +2,7 @@ package com.silas.digitalfactory.kopa;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.icu.util.Calendar;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,6 +25,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +65,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -551,6 +555,7 @@ public class ChwHomePage extends AppCompatActivity
                 .addParameter("EmploymentCategoryId","1")
                 .addParameter("Occupation","NA")
                 .addParameter("EmploymentStation","NA")
+                .addParameter("EncodedImageString","NA")
                 .setNotificationConfig(new UploadNotificationConfig())
                 .setMaxRetries(2)
                 .startUpload(); //Starting the upload
@@ -687,6 +692,7 @@ public class ChwHomePage extends AppCompatActivity
               String strLoanAmount = etLoanAmount.getText().toString();
 
               submitLoanApplication(strEmploymentStatus, strEmploymentCategoryId, strOccupation, strEmploymentStation, strLoanAmount, loanExpectedReturnDate);
+              submitEncodedImageString();
               loanAppDialog.cancel();
             }
         });
@@ -750,13 +756,17 @@ public class ChwHomePage extends AppCompatActivity
       @Override
       public void onResponse(String s) {
 
-        Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
 
         //Displaying our grid
         try {
           JSONObject object = new JSONObject(s);
-          JSONArray jsonarray= object.getJSONArray("results");
+          JSONObject dataObject = object.getJSONObject("results");
+          Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
 
+          if(isSubmissionSuccessful) {
+            Toast.makeText(getBaseContext(), "Loan application successfully submitted", Toast.LENGTH_LONG).show();
+            updateClientEmploymentDetails(strEmploymentStatus,strEmploymentCategoryId,strOccupation,strEmploymentStation);
+          }
 
 
         } catch (JSONException e) {
@@ -822,8 +832,10 @@ public class ChwHomePage extends AppCompatActivity
               obj = jsonarray.getJSONObject(0);
 
               String ClientId =obj.getString("ClientId");
+              String ClientProfilePicName =obj.getString("ClientProfilePicName");
 
               editor.putString("ClientId", ClientId);
+              editor.putString("ClientProfilePicName", ClientId);
               editor.commit();
 
             } catch (JSONException e) {
@@ -858,6 +870,103 @@ public class ChwHomePage extends AppCompatActivity
     //Adding our request to the queue
     requestQueue.add(stringRequest);
   }
+
+
+
+  private void updateClientEmploymentDetails(final String strEmploymentStatus, final String strEmploymentCategoryId, final String strOccupation, final String strEmploymentStation){
+
+
+    StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.update_client_employment_details, new Response.Listener<String>() {
+      @Override
+      public void onResponse(String s) {
+
+
+        //Displaying our grid
+        try {
+          JSONObject object = new JSONObject(s);
+          JSONObject dataObject = object.getJSONObject("results");
+          Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
+
+//          if(isSubmissionSuccessful) {
+//            Toast.makeText(getBaseContext(), "imesubmit", Toast.LENGTH_LONG).show();
+//          }
+
+
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+    }, new Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError volleyError) {
+        Log.d("ggg", volleyError.toString());
+      }
+    }) {
+
+      @Override
+      protected Map<String, String> getParams() {
+        // Posting params to register url
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("EmploymentStatus",strEmploymentStatus);
+        params.put("EmploymentCategoryId",strEmploymentCategoryId);
+        params.put("Occupation",strOccupation);
+        params.put("EmploymentStation",strEmploymentStation);
+
+
+        return params;
+      }
+
+    };
+
+    RequestQueue requestQueue = Volley.newRequestQueue(this);
+    //Adding our request to the queue
+    requestQueue.add(stringRequest);
+  }
+
+
+  public void submitEncodedImageString() {
+
+    final String encodedImageString = getStringImage(bitmap);
+    class UploadImage extends AsyncTask<Void, Void, String> {
+      ProgressDialog loading;
+
+      @Override
+      protected void onPreExecute() {
+        super.onPreExecute();
+        loading = ProgressDialog.show(ChwHomePage.this, "Please wait...", "uploading", false, false);
+      }
+
+      @Override
+      protected void onPostExecute(String s) {
+        super.onPostExecute(s);
+        loading.dismiss();
+        Toast.makeText(ChwHomePage.this, s, Toast.LENGTH_LONG).show();
+      }
+
+      @Override
+      protected String doInBackground(Void... params) {
+        RequestHandler rh = new RequestHandler();
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("ColumnName", "ClientId");
+        param.put("ColumnValue", pref.getString("ClientId", null));
+        param.put("EncodedImageString", encodedImageString);
+        String result = rh.sendPostRequest(Config.update_individual_company_clients_encoded_image, param);
+        return result;
+      }
+    }
+    UploadImage u = new UploadImage();
+    u.execute();
+  }
+
+
+  public String getStringImage(Bitmap bmp) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+    byte[] imageBytes = baos.toByteArray();
+    String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    return encodedImage;
+  }
+
 
 
 }
