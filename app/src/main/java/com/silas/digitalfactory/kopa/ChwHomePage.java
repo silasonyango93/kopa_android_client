@@ -555,7 +555,6 @@ public class ChwHomePage extends AppCompatActivity
                 .addParameter("EmploymentCategoryId","1")
                 .addParameter("Occupation","NA")
                 .addParameter("EmploymentStation","NA")
-                .addParameter("EncodedImageString","NA")
                 .setNotificationConfig(new UploadNotificationConfig())
                 .setMaxRetries(2)
                 .startUpload(); //Starting the upload
@@ -692,7 +691,6 @@ public class ChwHomePage extends AppCompatActivity
               String strLoanAmount = etLoanAmount.getText().toString();
 
               submitLoanApplication(strEmploymentStatus, strEmploymentCategoryId, strOccupation, strEmploymentStation, strLoanAmount, loanExpectedReturnDate);
-              submitEncodedImageString();
               loanAppDialog.cancel();
             }
         });
@@ -924,48 +922,48 @@ public class ChwHomePage extends AppCompatActivity
   }
 
 
-  public void submitEncodedImageString() {
-
-    final String encodedImageString = getStringImage(bitmap);
-    class UploadImage extends AsyncTask<Void, Void, String> {
-      ProgressDialog loading;
-
-      @Override
-      protected void onPreExecute() {
-        super.onPreExecute();
-        loading = ProgressDialog.show(ChwHomePage.this, "Please wait...", "uploading", false, false);
-      }
-
-      @Override
-      protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-        loading.dismiss();
-        Toast.makeText(ChwHomePage.this, s, Toast.LENGTH_LONG).show();
-      }
-
-      @Override
-      protected String doInBackground(Void... params) {
-        RequestHandler rh = new RequestHandler();
-        HashMap<String, String> param = new HashMap<String, String>();
-        param.put("ColumnName", "ClientId");
-        param.put("ColumnValue", pref.getString("ClientId", null));
-        param.put("EncodedImageString", encodedImageString);
-        String result = rh.sendPostRequest(Config.update_individual_company_clients_encoded_image, param);
-        return result;
-      }
-    }
-    UploadImage u = new UploadImage();
-    u.execute();
-  }
-
-
-  public String getStringImage(Bitmap bmp) {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-    byte[] imageBytes = baos.toByteArray();
-    String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-    return encodedImage;
-  }
+//  public void submitEncodedImageString() {
+//
+//    final String encodedImageString = getStringImage(bitmap);
+//    class UploadImage extends AsyncTask<Void, Void, String> {
+//      ProgressDialog loading;
+//
+//      @Override
+//      protected void onPreExecute() {
+//        super.onPreExecute();
+//        loading = ProgressDialog.show(ChwHomePage.this, "Please wait...", "uploading", false, false);
+//      }
+//
+//      @Override
+//      protected void onPostExecute(String s) {
+//        super.onPostExecute(s);
+//        loading.dismiss();
+//        Toast.makeText(ChwHomePage.this, s, Toast.LENGTH_LONG).show();
+//      }
+//
+//      @Override
+//      protected String doInBackground(Void... params) {
+//        RequestHandler rh = new RequestHandler();
+//        HashMap<String, String> param = new HashMap<String, String>();
+//        param.put("ColumnName", "ClientId");
+//        param.put("ColumnValue", pref.getString("ClientId", null));
+//        param.put("EncodedImageString", encodedImageString);
+//        String result = rh.sendPostRequest(Config.update_individual_company_clients_encoded_image, param);
+//        return result;
+//      }
+//    }
+//    UploadImage u = new UploadImage();
+//    u.execute();
+//  }
+//
+//
+//  public String getStringImage(Bitmap bmp) {
+//    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//    bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//    byte[] imageBytes = baos.toByteArray();
+//    String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//    return encodedImage;
+//  }
 
 
 
