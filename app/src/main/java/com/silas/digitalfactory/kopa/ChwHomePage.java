@@ -576,7 +576,7 @@ public class ChwHomePage extends AppCompatActivity
           JSONObject object = new JSONObject(s);
           JSONArray jsonarray= object.getJSONArray("results");
 
-          employment_categories_list.add(new EmploymentCategoriesModel(Config.UNEMPLOYED_STATUS,"999","Unemployed"));
+          employment_categories_list.add(new EmploymentCategoriesModel(Config.UNEMPLOYED_STATUS,"1","Unemployed"));
 
           for(int i = 0; i<jsonarray.length(); i++){
 

@@ -111,7 +111,7 @@ public class FragmentOne extends Fragment {
                             String ClientEmail=obj.getString("ClientEmail");
                             String ClientRegistrationDate=obj.getString("ClientRegistrationDate");
                             String EmploymentStatus=obj.getString("EmploymentStatus");
-                            String EmploymentCategoryId=obj.getString("EmploymentCategoryId");
+                            String EmploymentCategoryId=obj.getString("CategoryDescription");
                             String Occupation=obj.getString("Occupation");
                             String EmploymentStation=obj.getString("EmploymentStation");
 
