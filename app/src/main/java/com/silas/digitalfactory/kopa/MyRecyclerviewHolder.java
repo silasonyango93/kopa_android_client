@@ -375,7 +375,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         requestQueue.add(stringRequest);
     }
 
-    public void prepareInstallmentPop(String loanApplicationId, final String loanAmount) {
+    public void prepareInstallmentPop(final String loanApplicationId, final String loanAmount) {
         View viewInstallmentPop = infLoanApplication.inflate(R.layout.installment_pop,null);
         final EditText etInstallmentAmount = (EditText) viewLoanApplication.findViewById(R.id.et_installment);
         Button btnSubmit = (Button) viewLoanApplication.findViewById(R.id.btMore);
@@ -385,16 +385,18 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
-                int fetchedLoanoanAmount,installmentAmount;
+                int fetchedLoanoanAmount,installmentAmount,remainingLoanAmount;
                 String strInstallmentAmount =  etInstallmentAmount.getText().toString().trim();
 
                 try {
                     installmentAmount = Integer.parseInt(strInstallmentAmount);
                     fetchedLoanoanAmount = Integer.parseInt(loanAmount);
+
+                    remainingLoanAmount = fetchedLoanoanAmount- installmentAmount;
                 } catch(NumberFormatException nfe) {
                     System.out.println("Could not parse " + nfe);
                 }
-                submitInstallmentAmount(strInstallmentAmount);
+                submitInstallmentAmount(loanApplicationId,strInstallmentAmount);
             }
         });
         popDisplayInstallmentForm(viewInstallmentPop);
@@ -414,10 +416,10 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
 
 
-    private void submitInstallmentAmount(String strInstallmentAmount){
+    private void submitInstallmentAmount(final String loanApplicationId, final String strInstallmentAmount){
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.add_loan_application, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.submit_loan_installment, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
 
@@ -429,8 +431,8 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
 
                     if(isSubmissionSuccessful) {
-                        Toast.makeText(getBaseContext(), "Loan application successfully submitted", Toast.LENGTH_LONG).show();
-                        updateClientEmploymentDetails(strEmploymentStatus,strEmploymentCategoryId,strOccupation,strEmploymentStation);
+                        Toast.makeText(context, "Loan installment submitted successfully", Toast.LENGTH_LONG).show();
+
                     }
 
 
@@ -449,22 +451,8 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
             protected Map<String, String> getParams() {
                 // Posting params to register url
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("ClientId",pref.getString("ClientId", null));
-                params.put("CompanyId",pref.getString("CompanyId", null));
-                params.put("CompanyBranchId",pref.getString("CompanyBranchId", null));
-                params.put("SystemUserId",pref.getString("SystemUserId", null));
-                params.put("LoanAmount",strLoanAmount);
-                params.put("ExpectedSettlementDate",loanExpectedReturnDate);
-                params.put("LoanRating","0");
-                params.put("IsFullyPaid","0");
-                params.put("RemainingLoanAmount",strLoanAmount);
-                params.put("EmploymentStatus",strEmploymentStatus);
-                params.put("EmploymentCategoryId",strEmploymentCategoryId);
-                params.put("Occupation",strOccupation);
-                params.put("EmploymentStation",strEmploymentStation);
-
-
-
+                params.put("LoanApplicationId",loanApplicationId);
+                params.put("InstallmentAmount",strInstallmentAmount);
                 return params;
             }
 
