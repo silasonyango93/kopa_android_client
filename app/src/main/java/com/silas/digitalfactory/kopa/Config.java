@@ -25,6 +25,7 @@ public class Config {
     public static final String update_individual_company_clients_encoded_image =ip + "update_individual_company_clients_encoded_image";
     public static final String pending_loan_with_current_company =ip + "pending_loan_with_current_company";
     public static final String submit_loan_installment =ip + "add_loan_repayment_installments";
+    public static final String deduct_paid_installment =ip + "deduct_paid_installment";
 
 
 

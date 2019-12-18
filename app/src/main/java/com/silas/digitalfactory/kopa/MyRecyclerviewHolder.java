@@ -386,6 +386,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
             @Override
             public void onClick(View v) {
                 int fetchedLoanoanAmount,installmentAmount,remainingLoanAmount;
+                String isFullyPaid = "0";
                 String strInstallmentAmount =  etInstallmentAmount.getText().toString().trim();
 
                 try {
@@ -393,10 +394,12 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     fetchedLoanoanAmount = Integer.parseInt(loanAmount);
 
                     remainingLoanAmount = fetchedLoanoanAmount- installmentAmount;
+                    if(remainingLoanAmount <= 0) {isFullyPaid = "1";}
+                    submitInstallmentAmount(loanApplicationId,strInstallmentAmount,remainingLoanAmount,isFullyPaid);
                 } catch(NumberFormatException nfe) {
                     System.out.println("Could not parse " + nfe);
                 }
-                submitInstallmentAmount(loanApplicationId,strInstallmentAmount);
+
             }
         });
         popDisplayInstallmentForm(viewInstallmentPop);
@@ -416,7 +419,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
 
 
-    private void submitInstallmentAmount(final String loanApplicationId, final String strInstallmentAmount){
+    private void submitInstallmentAmount(final String loanApplicationId, final String strInstallmentAmount, final int remainingLoanAmount, final String isFullyPaid){
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.submit_loan_installment, new Response.Listener<String>() {
@@ -431,7 +434,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
 
                     if(isSubmissionSuccessful) {
-                        Toast.makeText(context, "Loan installment submitted successfully", Toast.LENGTH_LONG).show();
+                        deductLoanRepaymentInstallment(loanApplicationId,remainingLoanAmount,isFullyPaid);
 
                     }
 
@@ -453,6 +456,59 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("LoanApplicationId",loanApplicationId);
                 params.put("InstallmentAmount",strInstallmentAmount);
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+
+
+    private void deductLoanRepaymentInstallment(final String loanApplicationId, final int remainingLoanAmount, final String isFullyPaid){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.deduct_paid_installment, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                Toast.makeText(context, s, Toast.LENGTH_LONG).show();
+
+
+                //Displaying our grid
+//                try {
+//                    JSONObject object = new JSONObject(s);
+//                    JSONObject dataObject = object.getJSONObject("results");
+//                    Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
+//
+//                    if(isSubmissionSuccessful) {
+//                        Toast.makeText(context, "Loan installment submitted successfully", Toast.LENGTH_LONG).show();
+//
+//                    }
+//
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("ColumnName","LoanApplicationId");
+                params.put("ColumnValue",loanApplicationId);
+                params.put("IsFullyPaid",isFullyPaid);
+                params.put("RemainingLoanAount",String.valueOf(remainingLoanAmount));
                 return params;
             }
 
