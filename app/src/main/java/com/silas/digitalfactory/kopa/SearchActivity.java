@@ -2,6 +2,7 @@ package com.silas.digitalfactory.kopa;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -38,6 +39,8 @@ public class SearchActivity extends AppCompatActivity implements  AdapterView.On
     AutoCompleteTextView textView;
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView rView;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
     private GridLayoutManager lLayout;
     View v;
     ArrayList<ClientModel> clients_list;
@@ -48,6 +51,8 @@ public class SearchActivity extends AppCompatActivity implements  AdapterView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
+        pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        editor = pref.edit();
         tvBackgroundIcon=(TextView) findViewById(R.id.tvBackground);
         tvBackgroundText=(TextView) findViewById(R.id.tvBackground2);
 
@@ -191,7 +196,7 @@ public class SearchActivity extends AppCompatActivity implements  AdapterView.On
 
 
 
-                            clients_list.add(new ClientModel(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation));
+                            checkLoanStatus(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation);
 
 
                         } catch (JSONException e) {
@@ -199,8 +204,7 @@ public class SearchActivity extends AppCompatActivity implements  AdapterView.On
                         }
                     }
 
-                    MyRecyclerviewAdapter rcAdapter = new MyRecyclerviewAdapter(SearchActivity.this,clients_list);
-                    rView.setAdapter(rcAdapter);
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -238,5 +242,71 @@ public class SearchActivity extends AppCompatActivity implements  AdapterView.On
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+
+
+    private void checkLoanStatus(final String clientId, final String clientFirstName, final String clientMiddleName, final String clientSurname, final String clientNationalId, final String clientProfilePicName, final String genderId, final String clientDOB, final String clientPhoneNumber, final String clientPhysicalAddress, final String clientEmail, final String clientRegistrationDate, final String employmentStatus, final String employmentCategoryId, final String occupation, final String employmentStation){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.pending_loan_with_current_company, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+                    if(jsonarray.length() == 0) {
+                        String LoanAmount = "N/A", RemainingLoanAmount="N/A";
+                        clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount));
+                    } else if(jsonarray.length() > 0) {
+                        //Creating a json object of the current index
+                        JSONObject obj = null;
+                        try {
+
+                            obj = jsonarray.getJSONObject(0);
+
+                            String LoanAmount=obj.getString("LoanAmount");
+                            String RemainingLoanAmount=obj.getString("RemainingLoanAmount");
+                            clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    MyRecyclerviewAdapter rcAdapter = new MyRecyclerviewAdapter(SearchActivity.this,clients_list);
+                    rView.setAdapter(rcAdapter);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("clientId",clientId);
+                params.put("companyId",pref.getString("CompanyId", null));
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(SearchActivity.this);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
     }
 }

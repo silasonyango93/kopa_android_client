@@ -1,6 +1,7 @@
 package com.silas.digitalfactory.kopa;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,6 +38,8 @@ public class FragmentOne extends Fragment {
     ArrayList<ClientModel> clients_list;
     private GridLayoutManager lLayout;
     SwipeRefreshLayout swipeRefreshLayout;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     public FragmentOne() {
         // Required empty public constructor
@@ -45,6 +49,8 @@ public class FragmentOne extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        pref = getActivity().getApplicationContext().getSharedPreferences("MyPref", 0);
+        editor = pref.edit();
         View v = inflater.inflate(R.layout.fragment_one, container, false);
         UserId="";
         clients_list = new ArrayList<>();
@@ -115,9 +121,8 @@ public class FragmentOne extends Fragment {
                             String Occupation=obj.getString("Occupation");
                             String EmploymentStation=obj.getString("EmploymentStation");
 
+                            checkLoanStatus(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation);
 
-
-                            clients_list.add(new ClientModel(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation));
 
 
                         } catch (JSONException e) {
@@ -125,8 +130,7 @@ public class FragmentOne extends Fragment {
                         }
                     }
 
-                    MyRecyclerviewAdapter rcAdapter = new MyRecyclerviewAdapter(getActivity(),clients_list);
-                    rView.setAdapter(rcAdapter);
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -148,6 +152,71 @@ public class FragmentOne extends Fragment {
 //                params.put("search_value",UserId);
 
 
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+    private void checkLoanStatus(final String clientId, final String clientFirstName, final String clientMiddleName, final String clientSurname, final String clientNationalId, final String clientProfilePicName, final String genderId, final String clientDOB, final String clientPhoneNumber, final String clientPhysicalAddress, final String clientEmail, final String clientRegistrationDate, final String employmentStatus, final String employmentCategoryId, final String occupation, final String employmentStation){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.pending_loan_with_current_company, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+                    if(jsonarray.length() == 0) {
+                        String LoanAmount = "N/A", RemainingLoanAmount="N/A";
+                        clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount));
+                    } else if(jsonarray.length() > 0) {
+                        //Creating a json object of the current index
+                        JSONObject obj = null;
+                        try {
+
+                            obj = jsonarray.getJSONObject(0);
+
+                            String LoanAmount=obj.getString("LoanAmount");
+                            String RemainingLoanAmount=obj.getString("RemainingLoanAmount");
+                            clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
+                    MyRecyclerviewAdapter rcAdapter = new MyRecyclerviewAdapter(getActivity(),clients_list);
+                    rView.setAdapter(rcAdapter);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("clientId",clientId);
+                params.put("companyId",pref.getString("CompanyId", null));
 
                 return params;
             }

@@ -100,6 +100,8 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         TextView tvEmploymentCategory = (TextView)  bView.findViewById(R.id.tv_employment_category);
         TextView tvOccupation = (TextView)  bView.findViewById(R.id.tv_occupation);
         TextView tvEmploymentStation = (TextView)  bView.findViewById(R.id.tv_employment_station);
+        TextView tvLoanAmount = (TextView)  bView.findViewById(R.id.tv_loan_amount);
+        TextView tvRemainingLoanAmount = (TextView)  bView.findViewById(R.id.tv_remaining_loan_amount);
 
         ImageView imvPencil = (ImageView) bView.findViewById(R.id.new_loan);
         ImageView imvDollar = (ImageView) bView.findViewById(R.id.loan_installment);
@@ -138,6 +140,9 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         tvEmploymentCategory.setText(clientObject.getEmploymentCategoryId());
         tvOccupation.setText(clientObject.getOccupation());
         tvEmploymentStation.setText(clientObject.getEmploymentStation());
+
+        tvLoanAmount.setText(clientObject.getLoanAmount());
+        tvRemainingLoanAmount.setText(clientObject.getRemainingLoanAmount());
         popDisplayMoreClientDetails(bView);
     }
 
