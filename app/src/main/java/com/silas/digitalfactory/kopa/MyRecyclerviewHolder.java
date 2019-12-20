@@ -40,7 +40,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     NetworkImageView nivPersonalPhoto;
     Context context;
     LayoutInflater inflater,infLoanApplication;
-    AlertDialog alertDialog,aldLoanApplication;
+    AlertDialog alertDialog,aldLoanApplication,installmentDialog;
     View bView, viewLoanApplication;
     ClientModel clientObject;
     private ImageLoader imageLoader;
@@ -377,8 +377,8 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
     public void prepareInstallmentPop(final String loanApplicationId, final String loanAmount) {
         View viewInstallmentPop = infLoanApplication.inflate(R.layout.installment_pop,null);
-        final EditText etInstallmentAmount = (EditText) viewLoanApplication.findViewById(R.id.et_installment);
-        Button btnSubmit = (Button) viewLoanApplication.findViewById(R.id.btMore);
+        final EditText etInstallmentAmount = (EditText) viewInstallmentPop.findViewById(R.id.et_installment);
+        Button btnSubmit = (Button) viewInstallmentPop.findViewById(R.id.btMore);
 
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
@@ -410,10 +410,10 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(v);
         builder.setCancelable(true);
-        aldLoanApplication = builder.create();
-        aldLoanApplication.setCancelable(true);
-        aldLoanApplication.setCanceledOnTouchOutside(true);
-        aldLoanApplication.show();
+        installmentDialog = builder.create();
+        installmentDialog.setCancelable(true);
+        installmentDialog.setCanceledOnTouchOutside(true);
+        installmentDialog.show();
 
     }
 
@@ -435,7 +435,6 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
                     if(isSubmissionSuccessful) {
                         deductLoanRepaymentInstallment(loanApplicationId,remainingLoanAmount,isFullyPaid);
-
                     }
 
 
@@ -475,24 +474,21 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.deduct_paid_installment, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                Toast.makeText(context, s, Toast.LENGTH_LONG).show();
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONObject dataObject = object.getJSONObject("results");
+                    Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
+
+                    if(isSubmissionSuccessful) {
+                        Toast.makeText(context, "Loan installment submitted successfully", Toast.LENGTH_LONG).show();
+                        installmentDialog.cancel();
+                    }
 
 
-                //Displaying our grid
-//                try {
-//                    JSONObject object = new JSONObject(s);
-//                    JSONObject dataObject = object.getJSONObject("results");
-//                    Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
-//
-//                    if(isSubmissionSuccessful) {
-//                        Toast.makeText(context, "Loan installment submitted successfully", Toast.LENGTH_LONG).show();
-//
-//                    }
-//
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -508,7 +504,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                 params.put("ColumnName","LoanApplicationId");
                 params.put("ColumnValue",loanApplicationId);
                 params.put("IsFullyPaid",isFullyPaid);
-                params.put("RemainingLoanAount",String.valueOf(remainingLoanAmount));
+                params.put("RemainingLoanAmount",String.valueOf(remainingLoanAmount));
                 return params;
             }
 
