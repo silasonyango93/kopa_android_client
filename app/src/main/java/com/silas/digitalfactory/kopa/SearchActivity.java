@@ -1,5 +1,6 @@
 package com.silas.digitalfactory.kopa;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements  AdapterView.OnItemSelectedListener {
     AutoCompleteTextView textView;
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView rView;
@@ -183,7 +185,7 @@ public class SearchActivity extends AppCompatActivity {
                             String ClientEmail=obj.getString("ClientEmail");
                             String ClientRegistrationDate=obj.getString("ClientRegistrationDate");
                             String EmploymentStatus=obj.getString("EmploymentStatus");
-                            String EmploymentCategoryId=obj.getString("EmploymentCategoryId");
+                            String EmploymentCategoryId=obj.getString("CategoryDescription");
                             String Occupation=obj.getString("Occupation");
                             String EmploymentStation=obj.getString("EmploymentStation");
 
@@ -197,7 +199,7 @@ public class SearchActivity extends AppCompatActivity {
                         }
                     }
 
-                    MyRecyclerviewAdapter rcAdapter = new MyRecyclerviewAdapter(getBaseContext(),clients_list);
+                    MyRecyclerviewAdapter rcAdapter = new MyRecyclerviewAdapter(SearchActivity.this,clients_list);
                     rView.setAdapter(rcAdapter);
 
                 } catch (JSONException e) {
@@ -226,5 +228,15 @@ public class SearchActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(getBaseContext());
         //Adding our request to the queue
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

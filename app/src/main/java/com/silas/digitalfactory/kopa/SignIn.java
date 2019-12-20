@@ -164,24 +164,25 @@ public class SignIn extends Activity implements View.OnClickListener {
                     String SystemUserId,CompanyBranchId,UserFirstName,UserMiddleName,UserSurname,GenderId,StaffNo,UserNationalId,UserEmail,UserPhoneNumber,UserPhysicalAddress,UserRegistrationDate;
                     jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
-                    SystemUserId = jObj.getString("SystemUserId");
-                    CompanyBranchId = jObj.getString("CompanyBranchId");
-                    UserFirstName = jObj.getString("UserFirstName");
-                    UserMiddleName = jObj.getString("UserMiddleName");
-                    UserSurname = jObj.getString("UserSurname");
-                    GenderId = jObj.getString("GenderId");
-                    StaffNo = jObj.getString("StaffNo");
-                    UserNationalId = jObj.getString("UserNationalId");
-                    UserEmail = jObj.getString("UserEmail");
-                    UserPhoneNumber = jObj.getString("UserPhoneNumber");
-                    UserPhysicalAddress = jObj.getString("UserPhysicalAddress");
-                    UserRegistrationDate = jObj.getString("UserRegistrationDate");
+
 
                     if (error == true) {//When response returns error
                         String errorMessage = jObj.getString("error_msg");
                         Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
                         hideDialog();
                     } else if (error == false) {
+                        SystemUserId = jObj.getString("SystemUserId");
+                        CompanyBranchId = jObj.getString("CompanyBranchId");
+                        UserFirstName = jObj.getString("UserFirstName");
+                        UserMiddleName = jObj.getString("UserMiddleName");
+                        UserSurname = jObj.getString("UserSurname");
+                        GenderId = jObj.getString("GenderId");
+                        StaffNo = jObj.getString("StaffNo");
+                        UserNationalId = jObj.getString("UserNationalId");
+                        UserEmail = jObj.getString("UserEmail");
+                        UserPhoneNumber = jObj.getString("UserPhoneNumber");
+                        UserPhysicalAddress = jObj.getString("UserPhysicalAddress");
+                        UserRegistrationDate = jObj.getString("UserRegistrationDate");
 
                         fetchMyCompanyDetails(SystemUserId,CompanyBranchId,UserFirstName,UserMiddleName,UserSurname,GenderId,StaffNo,UserNationalId,UserEmail,UserPhoneNumber,UserPhysicalAddress,UserRegistrationDate);
 

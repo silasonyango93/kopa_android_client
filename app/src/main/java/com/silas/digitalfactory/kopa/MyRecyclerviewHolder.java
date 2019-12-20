@@ -40,7 +40,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     NetworkImageView nivPersonalPhoto;
     Context context;
     LayoutInflater inflater,infLoanApplication;
-    AlertDialog alertDialog,aldLoanApplication;
+    AlertDialog alertDialog,aldLoanApplication,installmentDialog;
     View bView, viewLoanApplication;
     ClientModel clientObject;
     private ImageLoader imageLoader;
@@ -96,15 +96,30 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         TextView tvNationalId = (TextView)  bView.findViewById(R.id.tv_national_id);
         TextView tvPhoneNumber = (TextView)  bView.findViewById(R.id.tv_phone_number);
         TextView tvPhysicalAddress = (TextView)  bView.findViewById(R.id.tv_physical_address);
+        TextView tvEmploymentstatus = (TextView)  bView.findViewById(R.id.tv_employment_status);
+        TextView tvEmploymentCategory = (TextView)  bView.findViewById(R.id.tv_employment_category);
+        TextView tvOccupation = (TextView)  bView.findViewById(R.id.tv_occupation);
+        TextView tvEmploymentStation = (TextView)  bView.findViewById(R.id.tv_employment_station);
+
         ImageView imvPencil = (ImageView) bView.findViewById(R.id.new_loan);
+        ImageView imvDollar = (ImageView) bView.findViewById(R.id.loan_installment);
 
         imvPencil.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                prepareLoanApplication();
+                getIfClientHasPendingLoanWithCurrentCompany();
             }
         });
+
+        imvDollar.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                checkLoanStatus();
+            }
+        });
+
 
 
         imageLoader = MCustomVolleyRequest.getInstance(context).getImageLoader();
@@ -118,6 +133,11 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         tvNationalId.setText(clientObject.getClientNationalId());
         tvPhoneNumber.setText(clientObject.getClientPhoneNumber());
         tvPhysicalAddress.setText(clientObject.getClientPhysicalAddress());
+
+        tvEmploymentstatus.setText(clientObject.getEmploymentStatus());
+        tvEmploymentCategory.setText(clientObject.getEmploymentCategoryId());
+        tvOccupation.setText(clientObject.getOccupation());
+        tvEmploymentStation.setText(clientObject.getEmploymentStation());
         popDisplayMoreClientDetails(bView);
     }
 
@@ -140,7 +160,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
             @Override
             public void onClick(View v) {
 
-              String strLoanAmount =  etLoanAmount.getText().toString();
+              String strLoanAmount =  etLoanAmount.getText().toString().trim();
                 submitLoanApplication(strLoanAmount);
             }
         });
@@ -227,6 +247,264 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                 params.put("Occupation",clientObject.getOccupation());
                 params.put("EmploymentStation",clientObject.getEmploymentStation());
 
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+
+    private void getIfClientHasPendingLoanWithCurrentCompany(){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.pending_loan_with_current_company, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+                    if(jsonarray.length()>0) {
+                        Toast.makeText(context,"This client has a pending loan with us", Toast.LENGTH_LONG).show();
+                    } else {
+                        prepareLoanApplication();
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("clientId",clientObject.getByClientId());
+                params.put("companyId",pref.getString("CompanyId", null));
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+
+    private void checkLoanStatus(){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.pending_loan_with_current_company, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+                    if(jsonarray.length() == 0) {
+                        Toast.makeText(context,"This client has no pending loan with us", Toast.LENGTH_LONG).show();
+                    } else if(jsonarray.length() > 0) {
+                        //Creating a json object of the current index
+                        JSONObject obj = null;
+                        try {
+
+                            obj = jsonarray.getJSONObject(0);
+
+
+                            String LoanApplicationId=obj.getString("LoanApplicationId");
+                            String LoanAmount=obj.getString("LoanAmount");
+                            prepareInstallmentPop(LoanApplicationId,LoanAmount);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("clientId",clientObject.getByClientId());
+                params.put("companyId",pref.getString("CompanyId", null));
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+    public void prepareInstallmentPop(final String loanApplicationId, final String loanAmount) {
+        View viewInstallmentPop = infLoanApplication.inflate(R.layout.installment_pop,null);
+        final EditText etInstallmentAmount = (EditText) viewInstallmentPop.findViewById(R.id.et_installment);
+        Button btnSubmit = (Button) viewInstallmentPop.findViewById(R.id.btMore);
+
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View v) {
+                int fetchedLoanoanAmount,installmentAmount,remainingLoanAmount;
+                String isFullyPaid = "0";
+                String strInstallmentAmount =  etInstallmentAmount.getText().toString().trim();
+
+                try {
+                    installmentAmount = Integer.parseInt(strInstallmentAmount);
+                    fetchedLoanoanAmount = Integer.parseInt(loanAmount);
+
+                    remainingLoanAmount = fetchedLoanoanAmount- installmentAmount;
+                    if(remainingLoanAmount <= 0) {isFullyPaid = "1";}
+                    submitInstallmentAmount(loanApplicationId,strInstallmentAmount,remainingLoanAmount,isFullyPaid);
+                } catch(NumberFormatException nfe) {
+                    System.out.println("Could not parse " + nfe);
+                }
+
+            }
+        });
+        popDisplayInstallmentForm(viewInstallmentPop);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void popDisplayInstallmentForm(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(v);
+        builder.setCancelable(true);
+        installmentDialog = builder.create();
+        installmentDialog.setCancelable(true);
+        installmentDialog.setCanceledOnTouchOutside(true);
+        installmentDialog.show();
+
+    }
+
+
+
+    private void submitInstallmentAmount(final String loanApplicationId, final String strInstallmentAmount, final int remainingLoanAmount, final String isFullyPaid){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.submit_loan_installment, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                //Displaying our grid
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONObject dataObject = object.getJSONObject("results");
+                    Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
+
+                    if(isSubmissionSuccessful) {
+                        deductLoanRepaymentInstallment(loanApplicationId,remainingLoanAmount,isFullyPaid);
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("LoanApplicationId",loanApplicationId);
+                params.put("InstallmentAmount",strInstallmentAmount);
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+
+
+    private void deductLoanRepaymentInstallment(final String loanApplicationId, final int remainingLoanAmount, final String isFullyPaid){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.deduct_paid_installment, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONObject dataObject = object.getJSONObject("results");
+                    Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
+
+                    if(isSubmissionSuccessful) {
+                        Toast.makeText(context, "Loan installment submitted successfully", Toast.LENGTH_LONG).show();
+                        installmentDialog.cancel();
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("ColumnName","LoanApplicationId");
+                params.put("ColumnValue",loanApplicationId);
+                params.put("IsFullyPaid",isFullyPaid);
+                params.put("RemainingLoanAmount",String.valueOf(remainingLoanAmount));
                 return params;
             }
 

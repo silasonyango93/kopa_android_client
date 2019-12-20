@@ -78,11 +78,18 @@ public class ClientModel {
     }
 
     public String getEmploymentStatus() {
-        return EmploymentStatus;
+        String strEmploymentStatus = "";
+        if(EmploymentStatus.equals("0")) {
+            strEmploymentStatus = "Unemployed";
+        } else {
+            strEmploymentStatus = "Employed";
+        }
+        return strEmploymentStatus;
     }
 
     public String getEmploymentCategoryId() {
         return EmploymentCategoryId;
+
     }
 
     public String getOccupation() {
