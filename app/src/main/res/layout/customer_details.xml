@@ -57,22 +57,22 @@
                 android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/first_star"
-                    android:src="@mipmap/full_star"
+                    android:src="@mipmap/empty_star"
                     android:layout_width="40dp"
                     android:layout_height="40dp" />
                 <ImageView
                     android:id="@+id/second_star"
-                    android:src="@mipmap/full_star"
+                    android:src="@mipmap/empty_star"
                     android:layout_width="40dp"
                     android:layout_height="40dp" />
                 <ImageView
                     android:id="@+id/third_star"
-                    android:src="@mipmap/full_star"
+                    android:src="@mipmap/empty_star"
                     android:layout_width="40dp"
                     android:layout_height="40dp" />
                 <ImageView
                     android:id="@+id/fourth_star"
-                    android:src="@mipmap/half_star"
+                    android:src="@mipmap/empty_star"
                     android:layout_width="40dp"
                     android:layout_height="40dp" />
                 <ImageView

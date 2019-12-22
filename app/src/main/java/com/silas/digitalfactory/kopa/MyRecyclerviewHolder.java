@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -12,10 +13,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +36,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -40,7 +46,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     NetworkImageView nivPersonalPhoto;
     Context context;
     LayoutInflater inflater,infLoanApplication;
-    AlertDialog alertDialog,aldLoanApplication,installmentDialog;
+    AlertDialog alertDialog,aldLoanApplication,installmentDialog,ratingDialog;
     View bView, viewLoanApplication;
     ClientModel clientObject;
     private ImageLoader imageLoader;
@@ -49,6 +55,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     public int Year,Month,Day,Hour,Minute,Seconds;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
+    ImageView imvFirstStar,imvSecondStar,imvThirdStar,imvFourthStar,imvFifthStar;
 
     public MyRecyclerviewHolder(View itemView, Context context) {
         super(itemView);
@@ -89,6 +96,56 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     public void prepareMoreDetails() {
         bView = inflater.inflate(R.layout.customer_details,null);
         NetworkImageView nivProfilePicture = (NetworkImageView) bView.findViewById(R.id.profile_pic);
+
+
+        imvFirstStar = (ImageView) bView.findViewById(R.id.first_star);
+        imvSecondStar = (ImageView) bView.findViewById(R.id.second_star);
+        imvThirdStar = (ImageView) bView.findViewById(R.id.third_star);
+        imvFourthStar = (ImageView) bView.findViewById(R.id.fourth_star);
+        imvFifthStar = (ImageView) bView.findViewById(R.id.fifth_star);
+
+        imvFirstStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View p = inflater.inflate(R.layout.rating_list_pop, null);
+                popStartRatingDialog(p,context);
+
+            }
+        });
+
+        imvSecondStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View p = inflater.inflate(R.layout.rating_list_pop, null);
+                popStartRatingDialog(p,context);
+
+            }
+        });
+        imvThirdStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View p = inflater.inflate(R.layout.rating_list_pop, null);
+                popStartRatingDialog(p,context);
+
+            }
+        });
+        imvFourthStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View p = inflater.inflate(R.layout.rating_list_pop, null);
+                popStartRatingDialog(p,context);
+
+            }
+        });
+        imvFifthStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View p = inflater.inflate(R.layout.rating_list_pop, null);
+                popStartRatingDialog(p,context);
+
+            }
+        });
+
         TextView tvName = (TextView)  bView.findViewById(R.id.tv_name);
         TextView tvGender = (TextView)  bView.findViewById(R.id.tv_gender);
         TextView tvEmail = (TextView)  bView.findViewById(R.id.tv_email);
@@ -518,5 +575,156 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         //Adding our request to the queue
         requestQueue.add(stringRequest);
+    }
+
+
+    public void populateStarRatingDialog(final View v, Context c)
+    {
+        final ListView listview = (ListView) v.findViewById(R.id.listview);
+        final ArrayList<String> list = new ArrayList<String>();
+
+
+        list.add("1");
+        list.add("1.5");
+        list.add("2");
+        list.add("2.5");
+        list.add("3");
+        list.add("3.5");
+        list.add("4");
+        list.add("4.5");
+        list.add("5");
+
+        final StableArrayAdapter adapter = new StableArrayAdapter(c,
+                android.R.layout.simple_list_item_1, list);
+        listview.setAdapter(adapter);
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view,
+                                    int position, long id) {
+                final String item = (String) parent.getItemAtPosition(position);
+                String val= ((TextView) view).getText().toString();
+                Resources res = context.getResources();
+
+
+                if(val.equals("1")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                } else if(val.equals("1.5")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                } else if(val.equals("2")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                } else if(val.equals("2.5")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                } else if(val.equals("3")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                } else if(val.equals("3.5")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                } else if(val.equals("4")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                } else if(val.equals("4.5")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                } else if(val.equals("4.5")) {
+                    imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    ratingDialog.cancel();
+                }
+
+
+            }
+
+        });
+    }
+
+    private class StableArrayAdapter extends ArrayAdapter<String> {
+
+        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+
+        public StableArrayAdapter(Context context, int textViewResourceId,
+                                  List<String> objects) {
+            super(context, textViewResourceId, objects);
+            for (int i = 0; i < objects.size(); ++i) {
+                mIdMap.put(objects.get(i), i);
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            String item = getItem(position);
+            return mIdMap.get(item);
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void popStartRatingDialog(View v,Context c) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        populateStarRatingDialog(v,c);
+        builder.setView(v);
+        builder.setCancelable(true);
+        builder.setTitle("Star Rating");
+        //editText.setText("test label");
+        ratingDialog = builder.create();
+        ratingDialog.show();
+
+
     }
 }
