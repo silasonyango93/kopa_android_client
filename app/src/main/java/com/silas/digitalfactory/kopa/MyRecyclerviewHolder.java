@@ -200,6 +200,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
         tvLoanAmount.setText(clientObject.getLoanAmount());
         tvRemainingLoanAmount.setText(clientObject.getRemainingLoanAmount());
+        //checkLoanStatus();
         popDisplayMoreClientDetails(bView);
     }
 
@@ -615,7 +616,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
                 } else if(val.equals("1.5")) {
                     imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
@@ -623,7 +624,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
                 } else if(val.equals("2")) {
                     imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
@@ -631,7 +632,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
                 } else if(val.equals("2.5")) {
                     imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
@@ -639,7 +640,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
                 } else if(val.equals("3")) {
                     imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
@@ -647,7 +648,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
                 } else if(val.equals("3.5")) {
                     imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
@@ -655,7 +656,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
                 } else if(val.equals("4")) {
                     imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
@@ -663,7 +664,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
                 } else if(val.equals("4.5")) {
                     imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
@@ -671,15 +672,15 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
-                } else if(val.equals("4.5")) {
+                } else if(val.equals("5")) {
                     imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                     imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
-                    Toast.makeText(context, val + " star rating", Toast.LENGTH_SHORT).show();
+                    checkExistingLoanBeforeLoanRating(val);
                     ratingDialog.cancel();
                 }
 
@@ -726,5 +727,116 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         ratingDialog.show();
 
 
+    }
+
+
+    private void updateLoanRating(final String loanApplicationId, final String starRating){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.update_loan_rating, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONObject dataObject = object.getJSONObject("results");
+                    Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
+
+                    if(isSubmissionSuccessful) {
+                        Toast.makeText(context, starRating + " star rating", Toast.LENGTH_SHORT).show();
+                        ratingDialog.cancel();
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("ColumnName","LoanApplicationId");
+                params.put("ColumnValue",loanApplicationId);
+                params.put("LoanRating",starRating);
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+    private void checkExistingLoanBeforeLoanRating(final String starRating){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.pending_loan_with_current_company, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+                    if(jsonarray.length() == 0) {
+                        Toast.makeText(context,"This client has no pending loan with us", Toast.LENGTH_LONG).show();
+                    } else if(jsonarray.length() > 0) {
+                        //Creating a json object of the current index
+                        JSONObject obj = null;
+                        try {
+
+                            obj = jsonarray.getJSONObject(0);
+
+
+                            String LoanApplicationId=obj.getString("LoanApplicationId");
+                            updateLoanRating(LoanApplicationId,starRating);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("clientId",clientObject.getByClientId());
+                params.put("companyId",pref.getString("CompanyId", null));
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
     }
 }
