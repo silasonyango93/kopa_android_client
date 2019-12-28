@@ -200,7 +200,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
         tvLoanAmount.setText(clientObject.getLoanAmount());
         tvRemainingLoanAmount.setText(clientObject.getRemainingLoanAmount());
-        //checkLoanStatus();
+        calculateAverageLoanRating();
         popDisplayMoreClientDetails(bView);
     }
 
@@ -829,6 +829,146 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("clientId",clientObject.getByClientId());
                 params.put("companyId",pref.getString("CompanyId", null));
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+    private void calculateAverageLoanRating(){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_specific_loan_application, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+                    if(jsonarray.length() == 0) {
+                        Toast.makeText(context,"This client has no pending loan with us", Toast.LENGTH_LONG).show();
+                    } else if(jsonarray.length() > 0) {
+                        //Creating a json object of the current index
+
+                        Float averageRating = Float.valueOf(0);
+                        for(int i = 0; i<jsonarray.length(); i++) {
+
+                            JSONObject obj = null;
+                            try {
+
+                                obj = jsonarray.getJSONObject(i);
+
+
+                                String LoanRating = obj.getString("LoanRating");
+                                Float flLoanRating = Float.parseFloat(LoanRating);
+                                averageRating = averageRating + flLoanRating;
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+
+                        Resources res = context.getResources();
+                        if(averageRating >= 1 && averageRating < 1.5) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating > 0 && averageRating < 1) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating <= 0) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating >= 1.5 && averageRating < 2) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating >= 2 && averageRating < 2.5) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating >= 2.5 && averageRating < 3) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating >= 3 && averageRating < 3.5) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating >= 3.5 && averageRating < 4) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating >= 4 && averageRating < 4.5) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+                        } else if(averageRating >= 4.5 && averageRating < 5) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
+                        } else if(averageRating == 5) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+                        }
+
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("column_name","clientId");
+                params.put("search_value",clientObject.getByClientId());
 
                 return params;
             }
