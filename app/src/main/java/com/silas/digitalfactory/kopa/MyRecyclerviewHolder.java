@@ -53,6 +53,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     String strLoanSettlementDate;
     private int mYear, mMonth, mDay, mHour, mMinute;
     public int Year,Month,Day,Hour,Minute,Seconds;
+    int isBlackListed = 0;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
     ImageView imvFirstStar,imvSecondStar,imvThirdStar,imvFourthStar,imvFifthStar;
@@ -876,6 +877,12 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
 
                                 String LoanRating = obj.getString("LoanRating");
+                                String isFullyPaidstatus = obj.getString("IsFullyPaid");
+
+                                if(isFullyPaidstatus.equals("999")) {
+                                    isBlackListed = 1;
+                                }
+
                                 Float flLoanRating = Float.parseFloat(LoanRating);
                                 averageRating = averageRating + flLoanRating;
 
@@ -887,67 +894,73 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                         }
 
                         Resources res = context.getResources();
-                        if(averageRating >= 1 && averageRating < 1.5) {
+                        if(averageRating >= 1 && averageRating < 1.5 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating > 0 && averageRating < 1) {
+                        } else if(isBlackListed == 1) {
+                            imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                            imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                            imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                            imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                            imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                        } else if(averageRating > 0 && averageRating < 1 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating <= 0) {
+                        } else if(averageRating <= 0 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating >= 1.5 && averageRating < 2) {
+                        } else if(averageRating >= 1.5 && averageRating < 2 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating >= 2 && averageRating < 2.5) {
+                        } else if(averageRating >= 2 && averageRating < 2.5 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating >= 2.5 && averageRating < 3) {
+                        } else if(averageRating >= 2.5 && averageRating < 3 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating >= 3 && averageRating < 3.5) {
+                        } else if(averageRating >= 3 && averageRating < 3.5 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating >= 3.5 && averageRating < 4) {
+                        } else if(averageRating >= 3.5 && averageRating < 4 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating >= 4 && averageRating < 4.5) {
+                        } else if(averageRating >= 4 && averageRating < 4.5 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
-                        } else if(averageRating >= 4.5 && averageRating < 5) {
+                        } else if(averageRating >= 4.5 && averageRating < 5 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.half_star));
-                        } else if(averageRating == 5) {
+                        } else if(averageRating == 5 && isBlackListed == 0) {
                             imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
                             imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.full_star));
