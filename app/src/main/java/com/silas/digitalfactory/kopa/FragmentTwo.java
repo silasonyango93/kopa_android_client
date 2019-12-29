@@ -39,6 +39,8 @@ public class FragmentTwo extends Fragment {
     SharedPreferences.Editor editor;
     ArrayList<Entry> entries;
     int numOfPendingLoans = 0;
+    int numOfCompletedLoans = 0;
+    int numOfBadDebts = 0;
     View v;
 
     public FragmentTwo() {
@@ -73,8 +75,7 @@ public class FragmentTwo extends Fragment {
 
 
                     numOfPendingLoans = jsonarray.length();
-
-                    drawGraph ();
+                    getFullyPaidLoans();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -92,6 +93,98 @@ public class FragmentTwo extends Fragment {
                 // Posting params to register url
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("companyId",pref.getString("CompanyId", null));
+                params.put("isFullyPaidStatus","0");
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+    private void getFullyPaidLoans(){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_a_company_pending_loans, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+
+                    numOfCompletedLoans = jsonarray.length();
+                    getBadDebts();
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("companyId",pref.getString("CompanyId", null));
+                params.put("isFullyPaidStatus","1");
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+    private void getBadDebts(){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_a_company_pending_loans, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+
+                    numOfBadDebts = jsonarray.length();
+                    drawGraph ();
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("companyId",pref.getString("CompanyId", null));
+                params.put("isFullyPaidStatus","1");
 
                 return params;
             }
@@ -108,9 +201,9 @@ public class FragmentTwo extends Fragment {
     public void drawGraph () {
         PieChart pieChart = (PieChart) v.findViewById(R.id.chart);
         entries = new ArrayList<>();
-        entries.add(new Entry(8f, 0));
+        entries.add(new Entry(Float.valueOf(numOfCompletedLoans), 0));
         entries.add(new Entry(Float.valueOf(numOfPendingLoans), 1));
-        entries.add(new Entry(3f, 2));
+        entries.add(new Entry(Float.valueOf(numOfBadDebts), 2));
 
 
 

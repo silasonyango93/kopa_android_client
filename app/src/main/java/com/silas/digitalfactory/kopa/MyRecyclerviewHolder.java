@@ -46,7 +46,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     NetworkImageView nivPersonalPhoto;
     Context context;
     LayoutInflater inflater,infLoanApplication;
-    AlertDialog alertDialog,aldLoanApplication,installmentDialog,ratingDialog;
+    AlertDialog alertDialog,aldLoanApplication,installmentDialog,ratingDialog,blackListDialog;
     View bView, viewLoanApplication;
     ClientModel clientObject;
     private ImageLoader imageLoader;
@@ -162,6 +162,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
         ImageView imvPencil = (ImageView) bView.findViewById(R.id.new_loan);
         ImageView imvDollar = (ImageView) bView.findViewById(R.id.loan_installment);
+        ImageView imvBlacklist = (ImageView) bView.findViewById(R.id.blacklist);
 
         imvPencil.setOnClickListener(new View.OnClickListener() {
 
@@ -176,6 +177,14 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
             @Override
             public void onClick(View v) {
                 checkLoanStatus();
+            }
+        });
+
+        imvBlacklist.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                checkLoanStatusBeforeBlackListing();
             }
         });
 
@@ -978,5 +987,108 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         //Adding our request to the queue
         requestQueue.add(stringRequest);
+    }
+
+
+    private void checkLoanStatusBeforeBlackListing(){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.pending_loan_with_current_company, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+                    if(jsonarray.length() == 0) {
+                        Toast.makeText(context,"This client has no pending loan with us", Toast.LENGTH_LONG).show();
+                    } else if(jsonarray.length() > 0) {
+                        //Creating a json object of the current index
+                        JSONObject obj = null;
+                        try {
+
+                            obj = jsonarray.getJSONObject(0);
+
+
+                            String LoanApplicationId=obj.getString("LoanApplicationId");
+                            prepareBlackListPop(LoanApplicationId);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("clientId",clientObject.getByClientId());
+                params.put("companyId",pref.getString("CompanyId", null));
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+    public void prepareBlackListPop(final String loanApplicationId) {
+        View viewBlackListPop = infLoanApplication.inflate(R.layout.blacklist_pop,null);
+        Button btnSubmit = (Button) viewBlackListPop.findViewById(R.id.btCancel);
+        Button btnCancel = (Button) viewBlackListPop.findViewById(R.id.btSubmit);
+
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View v) {
+                blackListDialog.cancel();
+            }
+        });
+
+        popDisplayBlackListDialog(viewBlackListPop);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void popDisplayBlackListDialog(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(v);
+        builder.setCancelable(true);
+        blackListDialog = builder.create();
+        blackListDialog.setCancelable(true);
+        blackListDialog.setCanceledOnTouchOutside(true);
+        blackListDialog.show();
+
     }
 }
