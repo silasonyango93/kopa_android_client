@@ -1056,15 +1056,16 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
 
     public void prepareBlackListPop(final String loanApplicationId) {
         View viewBlackListPop = infLoanApplication.inflate(R.layout.blacklist_pop,null);
-        Button btnSubmit = (Button) viewBlackListPop.findViewById(R.id.btCancel);
-        Button btnCancel = (Button) viewBlackListPop.findViewById(R.id.btSubmit);
+        Button btnSubmit = (Button) viewBlackListPop.findViewById(R.id.btSubmit);
+        Button btnCancel = (Button) viewBlackListPop.findViewById(R.id.btCancel);
 
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
-
+                registerBadDebt(loanApplicationId);
+                blackListDialog.cancel();
             }
         });
 
@@ -1090,5 +1091,59 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
         blackListDialog.setCanceledOnTouchOutside(true);
         blackListDialog.show();
 
+    }
+
+
+    private void registerBadDebt(final String loanApplicationId){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.register_bad_debt, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                //Displaying our grid
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONObject dataObject = object.getJSONObject("results");
+                    Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
+
+                    if(isSubmissionSuccessful) {
+                        Toast.makeText(context,"This loan has been successfully registered as a bad debt.", Toast.LENGTH_LONG).show();
+                        Resources res = context.getResources();
+                        imvFirstStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                        imvSecondStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                        imvThirdStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                        imvFourthStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                        imvFifthStar.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("ColumnName","LoanApplicationId");
+                params.put("ColumnValue",loanApplicationId);
+                params.put("IsFullyPaid","999");
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
     }
 }

@@ -29,6 +29,7 @@ public class Config {
     public static final String update_loan_rating =ip + "update_loan_rating";
     public static final String get_specific_loan_application =ip + "get_specific_loan_application";
     public static final String get_a_company_pending_loans =ip + "get_a_company_pending_loans";
+    public static final String register_bad_debt =ip + "register_bad_debt";
 
 
 

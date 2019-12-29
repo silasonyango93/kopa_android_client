@@ -184,7 +184,7 @@ public class FragmentTwo extends Fragment {
                 // Posting params to register url
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("companyId",pref.getString("CompanyId", null));
-                params.put("isFullyPaidStatus","1");
+                params.put("isFullyPaidStatus","999");
 
                 return params;
             }
