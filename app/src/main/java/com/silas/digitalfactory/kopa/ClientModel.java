@@ -3,8 +3,9 @@ package com.silas.digitalfactory.kopa;
 public class ClientModel {
 
     String ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation,LoanAmount,RemainingLoanAmount;
+    int Star,IsBlackListed;
 
-    public ClientModel(String ClientId,String ClientFirstName,String ClientMiddleName,String ClientSurname,String ClientNationalId,String ClientProfilePicName,String GenderId,String ClientDOB,String ClientPhoneNumber,String ClientPhysicalAddress,String ClientEmail,String ClientRegistrationDate, String EmploymentStatus, String EmploymentCategoryId, String Occupation, String EmploymentStation, String LoanAmount, String RemainingLoanAmount){
+    public ClientModel(String ClientId,String ClientFirstName,String ClientMiddleName,String ClientSurname,String ClientNationalId,String ClientProfilePicName,String GenderId,String ClientDOB,String ClientPhoneNumber,String ClientPhysicalAddress,String ClientEmail,String ClientRegistrationDate, String EmploymentStatus, String EmploymentCategoryId, String Occupation, String EmploymentStation, String LoanAmount, String RemainingLoanAmount, int Star, int IsBlackListed){
         this.ClientId=ClientId;
         this.ClientFirstName=ClientFirstName;
         this.ClientMiddleName=ClientMiddleName;
@@ -23,6 +24,8 @@ public class ClientModel {
         this.EmploymentStation=EmploymentStation;
         this.LoanAmount=LoanAmount;
         this.RemainingLoanAmount=RemainingLoanAmount;
+        this.Star=Star;
+        this.IsBlackListed=IsBlackListed;
     }
 
     public String getByClientId() {
@@ -108,5 +111,13 @@ public class ClientModel {
 
     public String getEmploymentStation() {
         return EmploymentStation;
+    }
+
+    public int getStar() {
+        return Star;
+    }
+
+    public int getIsBlackListed() {
+        return IsBlackListed;
     }
 }

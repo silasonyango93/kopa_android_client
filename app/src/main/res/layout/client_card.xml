@@ -61,7 +61,7 @@
             <ImageView
                 android:id="@+id/overall_rating"
                 android:layout_marginTop="4dp"
-                android:src="@mipmap/green_start"
+                android:src="@mipmap/empty_star"
                 android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

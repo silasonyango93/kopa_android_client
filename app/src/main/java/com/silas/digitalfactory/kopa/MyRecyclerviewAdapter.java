@@ -1,6 +1,7 @@
 package com.silas.digitalfactory.kopa;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,10 +38,25 @@ public class MyRecyclerviewAdapter  extends RecyclerView.Adapter<MyRecyclerviewH
 
     @Override
     public void onBindViewHolder(MyRecyclerviewHolder holder, int position) {
+        int star = 0, isBlackListed = 0;
+        Resources res = context.getResources();
         holder.tvName.setText(clients_list.get(position).getByClientName());
         holder.tvRegisteredDate.setText(clients_list.get(position).getByRegistrationDate());
         holder.tvVillageName.setText(clients_list.get(position).getByClientEmail());
         holder.clientObject=(clients_list.get(position));
+
+        star = clients_list.get(position).getStar();
+        isBlackListed = clients_list.get(position).getIsBlackListed();
+
+        if(isBlackListed == 0 && star == Config.GREY_STAR) {
+            holder.imvOverallRating.setImageDrawable(res.getDrawable(R.mipmap.empty_star));
+        } else if(isBlackListed == 0 && star == Config.GREEN_STAR) {
+            holder.imvOverallRating.setImageDrawable(res.getDrawable(R.mipmap.green_start));
+        } else if(isBlackListed == 0 && star == Config.YELLOW_STAR) {
+            holder.imvOverallRating.setImageDrawable(res.getDrawable(R.mipmap.full_star));
+        } else if(isBlackListed == 1) {
+            holder.imvOverallRating.setImageDrawable(res.getDrawable(R.mipmap.red_start));
+        }
 
         imageLoader = MCustomVolleyRequest.getInstance(context).getImageLoader();
         imageLoader.get(clients_list.get(position).getImageUrl(), ImageLoader.getImageListener(holder.nivPersonalPhoto, R.mipmap.ic_launcher, android.R.drawable.ic_dialog_alert));

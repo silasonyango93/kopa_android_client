@@ -56,13 +56,14 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
     int isBlackListed = 0;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
-    ImageView imvFirstStar,imvSecondStar,imvThirdStar,imvFourthStar,imvFifthStar;
+    ImageView imvFirstStar,imvSecondStar,imvThirdStar,imvFourthStar,imvFifthStar,imvOverallRating;
 
     public MyRecyclerviewHolder(View itemView, Context context) {
         super(itemView);
 
 
         itemView.setOnClickListener(this);
+        imvOverallRating = (ImageView) itemView.findViewById(R.id.overall_rating);
         tvName = (TextView) itemView.findViewById(R.id.tv_name);
         tvRegisteredDate = (TextView) itemView.findViewById(R.id.tv_time);
         tvVillageName = (TextView) itemView.findViewById(R.id.tv_village);

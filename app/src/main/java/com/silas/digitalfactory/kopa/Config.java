@@ -10,6 +10,9 @@ import java.io.IOException;
 
 public class Config {
     public static DatabaseHelper myDb;
+    public static int GREY_STAR = 1;
+    public static int GREEN_STAR = 2;
+    public static int YELLOW_STAR = 3;
     public static String UNEMPLOYED_STATUS = "1";
     public static String CREDENTIALS_ROW_KEY = "1";
     public static final String ip = "http://104.197.5.158:80/";

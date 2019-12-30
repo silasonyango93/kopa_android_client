@@ -2,6 +2,7 @@ package com.silas.digitalfactory.kopa;
 
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -40,6 +41,7 @@ public class FragmentOne extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
+    int isBlackListed, star;
 
     public FragmentOne() {
         // Required empty public constructor
@@ -121,7 +123,7 @@ public class FragmentOne extends Fragment {
                             String Occupation=obj.getString("Occupation");
                             String EmploymentStation=obj.getString("EmploymentStation");
 
-                            checkLoanStatus(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation);
+                            calculateAverageLoanRating(ClientId,ClientFirstName,ClientMiddleName,ClientSurname,ClientNationalId,ClientProfilePicName,GenderId,ClientDOB,ClientPhoneNumber,ClientPhysicalAddress,ClientEmail,ClientRegistrationDate,EmploymentStatus,EmploymentCategoryId,Occupation,EmploymentStation);
 
 
 
@@ -164,7 +166,7 @@ public class FragmentOne extends Fragment {
     }
 
 
-    private void checkLoanStatus(final String clientId, final String clientFirstName, final String clientMiddleName, final String clientSurname, final String clientNationalId, final String clientProfilePicName, final String genderId, final String clientDOB, final String clientPhoneNumber, final String clientPhysicalAddress, final String clientEmail, final String clientRegistrationDate, final String employmentStatus, final String employmentCategoryId, final String occupation, final String employmentStation){
+    private void checkLoanStatus(final String clientId, final String clientFirstName, final String clientMiddleName, final String clientSurname, final String clientNationalId, final String clientProfilePicName, final String genderId, final String clientDOB, final String clientPhoneNumber, final String clientPhysicalAddress, final String clientEmail, final String clientRegistrationDate, final String employmentStatus, final String employmentCategoryId, final String occupation, final String employmentStation, final int star, final int isBlackListed){
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.pending_loan_with_current_company, new Response.Listener<String>() {
@@ -178,7 +180,7 @@ public class FragmentOne extends Fragment {
 
                     if(jsonarray.length() == 0) {
                         String LoanAmount = "N/A", RemainingLoanAmount="N/A";
-                        clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount));
+                        clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount,star,isBlackListed));
                     } else if(jsonarray.length() > 0) {
                         //Creating a json object of the current index
                         JSONObject obj = null;
@@ -188,7 +190,7 @@ public class FragmentOne extends Fragment {
 
                             String LoanAmount=obj.getString("LoanAmount");
                             String RemainingLoanAmount=obj.getString("RemainingLoanAmount");
-                            clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount));
+                            clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount,star,isBlackListed));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -217,6 +219,97 @@ public class FragmentOne extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("clientId",clientId);
                 params.put("companyId",pref.getString("CompanyId", null));
+
+                return params;
+            }
+
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        //Adding our request to the queue
+        requestQueue.add(stringRequest);
+    }
+
+
+
+    private void calculateAverageLoanRating(final String clientId, final String clientFirstName, final String clientMiddleName, final String clientSurname, final String clientNationalId, final String clientProfilePicName, final String genderId, final String clientDOB, final String clientPhoneNumber, final String clientPhysicalAddress, final String clientEmail, final String clientRegistrationDate, final String employmentStatus, final String employmentCategoryId, final String occupation, final String employmentStation){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.get_specific_loan_application, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+
+                try {
+                    JSONObject object = new JSONObject(s);
+                    JSONArray jsonarray= object.getJSONArray("results");
+
+                    if(jsonarray.length() == 0) {
+                        Toast.makeText(getActivity(),"This client has no pending loan with us", Toast.LENGTH_LONG).show();
+                    } else if(jsonarray.length() > 0) {
+                        //Creating a json object of the current index
+
+                        Float averageRating = Float.valueOf(0);
+                        for(int i = 0; i<jsonarray.length(); i++) {
+
+                            JSONObject obj = null;
+                            try {
+
+                                obj = jsonarray.getJSONObject(i);
+
+
+                                String LoanRating = obj.getString("LoanRating");
+                                String isFullyPaidstatus = obj.getString("IsFullyPaid");
+
+                                if(isFullyPaidstatus.equals("999")) {
+                                    isBlackListed = 1;
+                                }
+
+                                Float flLoanRating = Float.parseFloat(LoanRating);
+                                averageRating = averageRating + flLoanRating;
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+
+                        if(averageRating <= 2.5) {
+                            star = Config.GREY_STAR;
+                        } else if(averageRating > 2.5 && averageRating < 4) {
+                            star = Config.GREEN_STAR;
+                        } else if(averageRating > 4) {
+                            star = Config.YELLOW_STAR;
+                        }
+
+                        checkLoanStatus(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,star,isBlackListed);
+
+
+
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("column_name","clientId");
+                params.put("search_value",clientId);
 
                 return params;
             }
