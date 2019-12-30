@@ -192,9 +192,11 @@ public class FragmentOne extends Fragment {
                             String RemainingLoanAmount=obj.getString("RemainingLoanAmount");
                             clients_list.add(new ClientModel(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,LoanAmount,RemainingLoanAmount,star,isBlackListed));
 
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
                     }
 
 
@@ -285,7 +287,8 @@ public class FragmentOne extends Fragment {
 
                         checkLoanStatus(clientId,clientFirstName,clientMiddleName,clientSurname,clientNationalId,clientProfilePicName,genderId,clientDOB,clientPhoneNumber,clientPhysicalAddress,clientEmail,clientRegistrationDate,employmentStatus,employmentCategoryId,occupation,employmentStation,star,isBlackListed);
 
-
+                        isBlackListed = 0;
+                        star = 0;
 
                     }
 
