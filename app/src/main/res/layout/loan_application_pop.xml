@@ -50,8 +50,34 @@
                     android:layout_weight=".95"
                     android:background="@drawable/group_top"
                     android:hint="Loan Amount"
-                    android:drawableLeft="@mipmap/person"
-                    android:inputType="text"
+                    android:drawableLeft="@mipmap/mulla"
+                    android:inputType="number"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="5dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingTop="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:paddingTop="10dp"
+                android:weightSum="1">
+
+                <EditText
+                    android:id="@+id/et_loan_rate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight=".95"
+                    android:background="@drawable/group_top"
+                    android:hint="Interest Rate(%)"
+                    android:drawableLeft="@mipmap/beam"
+                    android:inputType="number"
                     android:paddingBottom="8dp"
                     android:paddingEnd="5dp"
                     android:paddingLeft="5dp"

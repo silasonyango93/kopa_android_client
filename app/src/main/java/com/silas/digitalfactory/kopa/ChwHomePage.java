@@ -675,8 +675,9 @@ public class ChwHomePage extends AppCompatActivity
 
         Button btnSubmit = (Button) v.findViewById(R.id.btMore);
         ImageView imgCalender = (ImageView) v.findViewById(R.id.calender);
-      expectedSettlementDateTick = (ImageView) v.findViewById(R.id.calender);
-      final EditText etLoanAmount = (EditText) v.findViewById(R.id.et_loan_amount);
+        expectedSettlementDateTick = (ImageView) v.findViewById(R.id.calender);
+        final EditText etLoanAmount = (EditText) v.findViewById(R.id.et_loan_amount);
+      final EditText etLoanRate = (EditText) v.findViewById(R.id.et_loan_rate);
 
 
       imgCalender.setOnClickListener(new View.OnClickListener() {
@@ -698,9 +699,20 @@ public class ChwHomePage extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-              String strLoanAmount = etLoanAmount.getText().toString();
+              int interestRate = 0, multiplicationFigure = 0;
+              double loan;
 
-              submitLoanApplication(strEmploymentStatus, strEmploymentCategoryId, strOccupation, strEmploymentStation, strLoanAmount, loanExpectedReturnDate);
+              String strLoanAmount = etLoanAmount.getText().toString().trim();
+              String strLoanRate = etLoanRate.getText().toString().trim();
+
+              interestRate = Integer.parseInt(strLoanRate);
+              multiplicationFigure = interestRate + 100;
+
+              loan = Double.parseDouble(strLoanAmount);
+
+              double amountPayable = Double.valueOf(loan) * (Double.valueOf(multiplicationFigure) / Double.valueOf(100));
+
+              submitLoanApplication(strEmploymentStatus, strEmploymentCategoryId, strOccupation, strEmploymentStation, strLoanAmount, loanExpectedReturnDate, String.valueOf(amountPayable));
               loanAppDialog.cancel();
             }
         });
@@ -757,7 +769,7 @@ public class ChwHomePage extends AppCompatActivity
   }
 
 
-  private void submitLoanApplication(final String strEmploymentStatus, final String strEmploymentCategoryId, final String strOccupation, final String strEmploymentStation, final String strLoanAmount, final String loanExpectedReturnDate){
+  private void submitLoanApplication(final String strEmploymentStatus, final String strEmploymentCategoryId, final String strOccupation, final String strEmploymentStation, final String strLoanAmount, final String loanExpectedReturnDate, final String amountPayable){
 
 
     StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.add_loan_application, new Response.Listener<String>() {
@@ -800,7 +812,7 @@ public class ChwHomePage extends AppCompatActivity
         params.put("ExpectedSettlementDate",loanExpectedReturnDate);
         params.put("LoanRating","0");
         params.put("IsFullyPaid","0");
-        params.put("RemainingLoanAmount",strLoanAmount);
+        params.put("RemainingLoanAmount",amountPayable);
         params.put("EmploymentStatus",strEmploymentStatus);
         params.put("EmploymentCategoryId",strEmploymentCategoryId);
         params.put("Occupation",strOccupation);
