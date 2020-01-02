@@ -2,6 +2,7 @@ package com.silas.digitalfactory.kopa;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
     SharedPreferences MY_SHARED_PREFERENCE;
     SharedPreferences.Editor editor;
     AlertDialog alertDialog;
+    ImageView employmentCategoryTick;
 
     //activity context
     Context context;
@@ -30,7 +33,7 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
     int resource;
 
     //constructor initializing the values
-    public MyListAdapter2(Context context, int resource, List<EmploymentCategoriesModel> heroList,SharedPreferences MY_SHARED_PREFERENCE,AlertDialog alertDialog) {
+    public MyListAdapter2(Context context, int resource, List<EmploymentCategoriesModel> heroList, SharedPreferences MY_SHARED_PREFERENCE, AlertDialog alertDialog, ImageView employmentCategoryTick) {
         super(context, resource, heroList);
         this.context = context;
         this.resource = resource;
@@ -38,6 +41,7 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
         this.MY_SHARED_PREFERENCE = MY_SHARED_PREFERENCE;
         editor = MY_SHARED_PREFERENCE.edit();
         this.alertDialog = alertDialog;
+        this.employmentCategoryTick = employmentCategoryTick;
 
     }
 
@@ -73,6 +77,8 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
                 editor.putString("EmploymentCategoryId", hero.getEmploymentCategoryId());
                 editor.commit();
                 alertDialog.cancel();
+                Resources res = context.getResources();
+                employmentCategoryTick.setImageDrawable(res.getDrawable(R.mipmap.upload_tick));
             }
         });
 
@@ -86,7 +92,8 @@ public class MyListAdapter2 extends ArrayAdapter<EmploymentCategoriesModel> {
                     editor.putString("EmploymentCategoryId", hero.getEmploymentCategoryId());
                     editor.commit();
                     alertDialog.cancel();
-
+                    Resources res = context.getResources();
+                    employmentCategoryTick.setImageDrawable(res.getDrawable(R.mipmap.upload_tick));
                 }
 
             }

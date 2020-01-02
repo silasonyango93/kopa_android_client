@@ -52,9 +52,8 @@
              android:layout_height="wrap_content"
              android:text="Employment Category"/>
             <ImageView
-                android:id="@+id/profpic_upload_tick"
+                android:id="@+id/employment_category_tick"
                 android:layout_margin="5dp"
-                android:src="@mipmap/upload_tick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

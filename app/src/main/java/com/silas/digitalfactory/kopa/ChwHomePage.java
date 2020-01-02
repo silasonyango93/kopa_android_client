@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.icu.util.Calendar;
@@ -82,7 +83,7 @@ public class ChwHomePage extends AppCompatActivity
   LayoutInflater inflater;
   DatabaseHelper myDb;
   public ImageView imgUploadPreview;
-  ImageView imgCalender,imgProfPic,imgNatIdPic;
+  ImageView imgCalender,imgProfPic,imgNatIdPic,imgUploadTick,employmentCategoryTick,expectedSettlementDateTick;
   private int mYear, mMonth, mDay, mHour, mMinute;
   public int Year,Month,Day,Hour,Minute,Seconds;
   Button btnNext;
@@ -265,6 +266,8 @@ public class ChwHomePage extends AppCompatActivity
         bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
         imgUploadPreview.setImageBitmap(bitmap);
         previewUpload();
+        Resources res = ChwHomePage.this.getResources();
+        imgUploadTick.setImageDrawable(res.getDrawable(R.mipmap.upload_tick));
 
       } catch (IOException e) {
         e.printStackTrace();
@@ -287,6 +290,7 @@ public class ChwHomePage extends AppCompatActivity
     View v= inflater.inflate(R.layout.personal_pop, null);
     imgCalender=(ImageView) v.findViewById(R.id.calender);
     imgProfPic=(ImageView) v.findViewById(R.id.personal_photo);
+    imgUploadTick=(ImageView) v.findViewById(R.id.profpic_upload_tick);
 
     final EditText etFirstName=(EditText)v.findViewById(R.id.et_first_name);
     final EditText etMiddleName=(EditText)v.findViewById(R.id.et_middle_name);
@@ -450,6 +454,7 @@ public class ChwHomePage extends AppCompatActivity
     View v= inflater.inflate(R.layout.employment_details_pop, null);
 
     ImageView imgJob=(ImageView) v.findViewById(R.id.personal_photo);
+      employmentCategoryTick=(ImageView) v.findViewById(R.id.employment_category_tick);
       final EditText etOccupation=(EditText)v.findViewById(R.id.et_occupation);
       final EditText etEmploymentStation=(EditText)v.findViewById(R.id.et_station);
     Button btnNext = (Button) v.findViewById(R.id.btMore);
@@ -515,7 +520,9 @@ public class ChwHomePage extends AppCompatActivity
               null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
       cursor.moveToFirst();
       path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-      cursor.close();}
+      cursor.close();
+
+    }
     else { Toast.makeText(getApplicationContext(),
             "You forgot to upload an image of your product!", Toast.LENGTH_LONG)
             .show();
@@ -653,7 +660,7 @@ public class ChwHomePage extends AppCompatActivity
   {
     final ListView listview = (ListView) v.findViewById(R.id.listview);
 
-    MyListAdapter2 adapter = new MyListAdapter2(this, R.layout.my_custom_list, employment_categories_list,pref,alertDialog2);
+    MyListAdapter2 adapter = new MyListAdapter2(this, R.layout.my_custom_list, employment_categories_list,pref,alertDialog2,employmentCategoryTick);
 
     //attaching adapter to the listview
     listview.setAdapter(adapter);
@@ -668,6 +675,7 @@ public class ChwHomePage extends AppCompatActivity
 
         Button btnSubmit = (Button) v.findViewById(R.id.btMore);
         ImageView imgCalender = (ImageView) v.findViewById(R.id.calender);
+      expectedSettlementDateTick = (ImageView) v.findViewById(R.id.calender);
       final EditText etLoanAmount = (EditText) v.findViewById(R.id.et_loan_amount);
 
 
@@ -677,6 +685,8 @@ public class ChwHomePage extends AppCompatActivity
         public void onClick(View view) {
           //alertDialog.cancel();
           getExpectedLoanReturnDate();
+          Resources res = ChwHomePage.this.getResources();
+          expectedSettlementDateTick.setImageDrawable(res.getDrawable(R.mipmap.upload_tick));
 
 
         }
