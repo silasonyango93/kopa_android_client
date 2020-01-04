@@ -66,8 +66,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,6 +107,7 @@ public class ChwHomePage extends AppCompatActivity
   ListView listview;
   SharedPreferences pref;
   SharedPreferences.Editor editor;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -377,21 +386,24 @@ public class ChwHomePage extends AppCompatActivity
       @Override
       public void onClick(View view) {
 
-        strFirstName=etFirstName.getText().toString();
-        strMiddleName=etMiddleName.getText().toString();
-        strSurname=etSurname.getText().toString();
-        strPhoneNumber=etPhoneNumber.getText().toString();
-        strEmail=etEmail.getText().toString();
-        strPhysicalAddress=etPhysicalAddress.getText().toString();
-        strNatId=etNatId.getText().toString();
-        strClientUUID = UUID.randomUUID().toString();
+        strFirstName=etFirstName.getText().toString().trim();
+        strMiddleName=etMiddleName.getText().toString().trim();
+        strSurname=etSurname.getText().toString().trim();
+        strPhoneNumber=etPhoneNumber.getText().toString().trim();
+        strEmail=etEmail.getText().toString().trim();
+        strPhysicalAddress=etPhysicalAddress.getText().toString().trim();
+        strNatId=etNatId.getText().toString().trim();
+        strClientUUID = UUID.randomUUID().toString().trim();
 
         int permissionCheck = ContextCompat.checkSelfPermission(ChwHomePage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
           ActivityCompat.requestPermissions(ChwHomePage.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_IMAGE_REQUEST);
         } else {
-          uploadMultipart(strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId,strGender,strDOB);
+         // uploadMultipart(strFirstName,strMiddleName,strSurname,strPhoneNumber,strEmail,strPhysicalAddress,strNatId,strGender,strDOB);
+
+          PostImageToImaggaAsync postImageToImaggaAsync = new PostImageToImaggaAsync();
+          postImageToImaggaAsync.execute();
           basicAlertDialog.cancel();
           prepEmploymentDetails();
         }
@@ -533,45 +545,7 @@ public class ChwHomePage extends AppCompatActivity
   }
 
 
-  public void uploadMultipart(String strFirstName, String strMiddleName, String strSurname, String strPhoneNumber, String strEmail, String strPhysicalAddress, String strNatId, String strGender, String strDOB) {
 
-    String path = getPath(filePath);
-
-    if (path.isEmpty()){//Do nothing and wait
-    }
-    else {
-      //Uploading code
-
-      try {
-
-        String uploadId = UUID.randomUUID().toString();
-        //Creating a multi part request
-        new MultipartUploadRequest(this, uploadId, Config.add_company_clients)
-                .addFileToUpload(path, "file") //Adding file
-                .addParameter("ClientFirstName",strFirstName)
-                .addParameter("ClientMiddleName",strMiddleName)
-                .addParameter("ClientSurname",strSurname)
-                .addParameter("ClientNationalId",strNatId)
-                .addParameter("GenderId",strGender)
-                .addParameter("ClientDOB",strDOB)
-                .addParameter("ClientPhoneNumber",strPhoneNumber)
-                .addParameter("ClientPhysicalAddress",strPhysicalAddress)
-                .addParameter("ClientEmail",strEmail)
-                .addParameter("ClientUniqueId",strClientUUID)
-                .addParameter("EmploymentStatus", "0")
-                .addParameter("EmploymentCategoryId","1")
-                .addParameter("Occupation","NA")
-                .addParameter("EmploymentStation","NA")
-                .setNotificationConfig(new UploadNotificationConfig())
-                .setMaxRetries(2)
-                .startUpload(); //Starting the upload
-
-
-      } catch (Exception exc) {
-        Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
-      }}
-
-  }
 
 
   public void fetchEmploymentCategories(){
@@ -987,6 +961,174 @@ public class ChwHomePage extends AppCompatActivity
 //    return encodedImage;
 //  }
 
+
+
+  public String postImageToImagga(String filepath) throws Exception {
+    HttpURLConnection connection = null;
+    DataOutputStream outputStream = null;
+    InputStream inputStream = null;
+
+    String twoHyphens = "--";
+    String boundary =  "*****"+Long.toString(System.currentTimeMillis())+"*****";
+    String lineEnd = "\r\n";
+
+    int bytesRead, bytesAvailable, bufferSize;
+    byte[] buffer;
+    int maxBufferSize = 1*1024*1024;
+
+    String filefield = "file";
+
+    String[] q = filepath.split("/");
+    int idx = q.length - 1;
+
+    File file = new File(filepath);
+    FileInputStream fileInputStream = new FileInputStream(file);
+
+    URL url = new URL(Config.upload_images);
+    connection = (HttpURLConnection) url.openConnection();
+
+    connection.setDoInput(true);
+    connection.setDoOutput(true);
+    connection.setUseCaches(false);
+
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Connection", "Keep-Alive");
+    connection.setRequestProperty("User-Agent", "Android Multipart HTTP Client 1.0");
+    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary="+boundary);
+
+    outputStream = new DataOutputStream(connection.getOutputStream());
+    outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+    outputStream.writeBytes("Content-Disposition: form-data; name=\"" + filefield + "\"; filename=\"" + q[idx] +"\"" + lineEnd);
+    outputStream.writeBytes("Content-Type: image/jpeg" + lineEnd);
+    outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
+    outputStream.writeBytes(lineEnd);
+
+    bytesAvailable = fileInputStream.available();
+    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+    buffer = new byte[bufferSize];
+
+    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+    while(bytesRead > 0) {
+      outputStream.write(buffer, 0, bufferSize);
+      bytesAvailable = fileInputStream.available();
+      bufferSize = Math.min(bytesAvailable, maxBufferSize);
+      bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+    }
+
+    outputStream.writeBytes(lineEnd);
+    outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+    inputStream = connection.getInputStream();
+
+    int status = connection.getResponseCode();
+    if (status == HttpURLConnection.HTTP_OK) {
+      BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      String inputLine;
+      StringBuffer response = new StringBuffer();
+
+      while ((inputLine = in.readLine()) != null) {
+        response.append(inputLine);
+      }
+
+      inputStream.close();
+      connection.disconnect();
+      fileInputStream.close();
+      outputStream.flush();
+      outputStream.close();
+
+      return response.toString();
+    } else {
+      throw new Exception("Non ok response returned");
+    }
+  }
+
+
+
+  public class PostImageToImaggaAsync extends AsyncTask<Void, Void, Void> {
+
+    @Override
+    protected void onPreExecute() {
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      try {
+        String dbProfPicName = postImageToImagga(getPath(filePath));
+       // Log.d("imagga", response);
+        submitClientDetails(dbProfPicName);
+      } catch (Exception e) {
+        //Toast.makeText(ChwHomePage.this, String.valueOf(e), Toast.LENGTH_LONG).show();
+      }
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void result) {
+    }
+  }
+
+
+
+  private void submitClientDetails(final String dbProfPicName){
+
+
+    StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.add_company_clients, new Response.Listener<String>() {
+      @Override
+      public void onResponse(String s) {
+
+
+        //Displaying our grid
+        try {
+          JSONObject object = new JSONObject(s);
+          JSONObject dataObject = object.getJSONObject("results");
+          Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
+
+          if(isSubmissionSuccessful) {
+            Toast.makeText(getBaseContext(), "Image upload successful", Toast.LENGTH_LONG).show();
+
+          }
+
+
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+    }, new Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError volleyError) {
+        Log.d("ggg", volleyError.toString());
+      }
+    }) {
+
+      @Override
+      protected Map<String, String> getParams() {
+        // Posting params to register url
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("ClientFirstName",strFirstName);
+        params.put("ClientMiddleName",strMiddleName);
+        params.put("ClientSurname",strSurname);
+        params.put("ClientNationalId",strNatId);
+        params.put("GenderId",strGender);
+        params.put("ClientDOB",strDOB);
+        params.put("ClientPhoneNumber",strPhoneNumber);
+        params.put("ClientPhysicalAddress",strPhysicalAddress);
+        params.put("ClientEmail",strEmail);
+        params.put("ClientProfilePicName",dbProfPicName);
+        params.put("ClientUniqueId",strClientUUID);
+        params.put("EmploymentStatus", "0");
+        params.put("EmploymentCategoryId","1");
+        params.put("Occupation","NA");
+        params.put("EmploymentStation","NA");
+
+        return params;
+      }
+
+    };
+
+    RequestQueue requestQueue = Volley.newRequestQueue(this);
+    //Adding our request to the queue
+    requestQueue.add(stringRequest);
+  }
 
 
 }

@@ -18,6 +18,7 @@ public class Config {
     public static final String ip = "http://104.197.5.158:80/";
     public static final String login_url =ip + "System_user_login";
     public static final String add_company_clients =ip + "add_company_clients";
+    public static final String upload_images =ip + "upload_images";
     public static final String get_all_company_clients =ip + "get_all_company_clients";
     public static final String get_my_employment_categories =ip + "get_specific_employment_categories";
     public static final String get_my_company_details =ip + "get_system_user_company_details";
