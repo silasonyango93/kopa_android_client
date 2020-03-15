@@ -15,7 +15,7 @@ public class Config {
     public static int YELLOW_STAR = 3;
     public static String UNEMPLOYED_STATUS = "1";
     public static String CREDENTIALS_ROW_KEY = "1";
-    public static final String ip = "http://104.197.5.158:80/";
+    public static final String ip = "http://backend.kopa.kopa.xyz/";
     public static final String login_url =ip + "System_user_login";
     public static final String add_company_clients =ip + "add_company_clients";
     public static final String upload_images =ip + "upload_images";
@@ -34,6 +34,7 @@ public class Config {
     public static final String get_specific_loan_application =ip + "get_specific_loan_application";
     public static final String get_a_company_pending_loans =ip + "get_a_company_pending_loans";
     public static final String register_bad_debt =ip + "register_bad_debt";
+    public static final String add_session_logs =ip + "add_session_logs";
 
 
 

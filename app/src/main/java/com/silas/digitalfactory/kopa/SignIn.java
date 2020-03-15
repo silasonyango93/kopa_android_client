@@ -309,12 +309,49 @@ public class SignIn extends Activity implements View.OnClickListener {
                     editor.putString("CompanyId", CompanyId);
                     editor.commit();
 
+                    startSessionLog(systemUserId);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("ggg", volleyError.toString());
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> stringMap = new HashMap<>();
+                stringMap.put("SystemUserId",systemUserId);
+
+                return stringMap;
+            }
+        };
+        Volley.newRequestQueue(this).add(stringRequest);
+    }
+
+
+    public void startSessionLog(final String systemUserId){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,Config.add_session_logs, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                //Displaying our grid
+                try {
+                    JSONObject object = new JSONObject(s);
+                    //JSONArray jsonarray= object.getJSONArray("results");
+                    JSONObject obj = object.getJSONObject("results");
+                    String dbSessionLogId =obj.getString("recordId");
+                    editor.putString("dbSessionLogId", dbSessionLogId);
+                    editor.commit();
+
                     Intent intent = new Intent(
                             getBaseContext(),ChwHomePage.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     hideDialog();
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -310,7 +310,7 @@ public class MyRecyclerviewHolder extends RecyclerView.ViewHolder implements Vie
                 params.put("ClientId",pref.getString("ClientId", null));
                 params.put("CompanyId",pref.getString("CompanyId", null));
                 params.put("CompanyBranchId",pref.getString("CompanyBranchId", null));
-                params.put("SystemUserId",pref.getString("SystemUserId", null));
+                params.put("SessionLogId",pref.getString("dbSessionLogId", null));
                 params.put("LoanAmount",strLoanAmount);
                 params.put("ExpectedSettlementDate",strLoanSettlementDate);
                 params.put("LoanRating","0");

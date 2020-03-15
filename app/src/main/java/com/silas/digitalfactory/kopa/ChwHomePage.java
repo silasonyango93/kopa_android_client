@@ -405,7 +405,6 @@ public class ChwHomePage extends AppCompatActivity
           PostImageToImaggaAsync postImageToImaggaAsync = new PostImageToImaggaAsync();
           postImageToImaggaAsync.execute();
           basicAlertDialog.cancel();
-          prepEmploymentDetails();
         }
 
       }
@@ -781,7 +780,7 @@ public class ChwHomePage extends AppCompatActivity
         params.put("ClientId",pref.getString("ClientId", null));
         params.put("CompanyId",pref.getString("CompanyId", null));
         params.put("CompanyBranchId",pref.getString("CompanyBranchId", null));
-        params.put("SystemUserId",pref.getString("SystemUserId", null));
+        params.put("SessionLogId",pref.getString("dbSessionLogId", null));
         params.put("LoanAmount",strLoanAmount);
         params.put("ExpectedSettlementDate",loanExpectedReturnDate);
         params.put("LoanRating","0");
@@ -987,6 +986,9 @@ public class ChwHomePage extends AppCompatActivity
     URL url = new URL(Config.upload_images);
     connection = (HttpURLConnection) url.openConnection();
 
+    //connection.getRequestMethod();
+    //connection.getInputStream();
+
     connection.setDoInput(true);
     connection.setDoOutput(true);
     connection.setUseCaches(false);
@@ -995,6 +997,8 @@ public class ChwHomePage extends AppCompatActivity
     connection.setRequestProperty("Connection", "Keep-Alive");
     connection.setRequestProperty("User-Agent", "Android Multipart HTTP Client 1.0");
     connection.setRequestProperty("Content-Type", "multipart/form-data; boundary="+boundary);
+
+
 
     outputStream = new DataOutputStream(connection.getOutputStream());
     outputStream.writeBytes(twoHyphens + boundary + lineEnd);
@@ -1084,8 +1088,7 @@ public class ChwHomePage extends AppCompatActivity
           Boolean isSubmissionSuccessful = dataObject.getBoolean("success");
 
           if(isSubmissionSuccessful) {
-            Toast.makeText(getBaseContext(), "Image upload successful", Toast.LENGTH_LONG).show();
-
+            prepEmploymentDetails();
           }
 
 
